@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SeeIsrael</string>
+
+    <string name="placeholder_no_locations">Sorry, no locations are currently available</string>
+
+
+</resources>

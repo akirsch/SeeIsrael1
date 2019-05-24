@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="standard_view_margin">16dp</dimen>
+
+    <!-- Size of expanded image in location detail screen -->
+    <dimen name="location_detail_expanded_image_height">256dp</dimen>
+
+    <dimen name="location_list_view_height">88dp</dimen>
+    <dimen name="avatar_diameter">40dp</dimen>
+
+    <!-- Different text sizes for the app -->
+    <dimen name="list_item_primary_text_size">16sp</dimen>
+    <dimen name="list_item_secondary_text_size">14sp</dimen>
+
+</resources>
