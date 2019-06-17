@@ -1,6 +1,6 @@
 package com.example.android.seeisrael.fragments;
 
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 public class FamilyPlacesFrgament extends Fragment {
 }

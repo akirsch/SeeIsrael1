@@ -3,5 +3,36 @@
 
     <string name="placeholder_no_locations">Sorry, no locations are currently available</string>
 
+    <string name="no_towns_available">Sorry, no towns are currently available</string>
+
+    <string name="no_wifi">Sorry, there are no available wifi connections./nPlease try again later</string>
+
+    <string name="location_image_content_description">This is an image of the chosen location</string>
+
+    <string name="dummy_string">Despite fears that Moscow may seek to influence the 2020 elections by launching cyber attacks, social media disinformation, covert agent operations and other “active measures” as it did in the 2016 election, adequate funding and White House focus to counter any new Russian meddling are lagging, experts and officials say.</string>
+
+    <string name="see_more">See More</string>
+
+    <string name="see_less">See Less</string>
+
+    <!-- String names of location catgeory tabs -->
+
+    <string name="discover">Discover</string>
+
+    <string name="eat">Eat</string>
+
+    <string name="hiking">Hiking</string>
+
+    <string name="shopping">Shop</string>
+
+    <string name="sports">Sports</string>
+
+    <string name="playing">Play</string>
+
+    <string name="sightseeing">Sight Seeing</string>
+
+    <string name="travelling">Travel</string>
+    <string name="title_activity_maps">Map</string>
+
 
 </resources>

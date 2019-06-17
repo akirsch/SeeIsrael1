@@ -3,11 +3,25 @@
 
     <dimen name="standard_view_margin">16dp</dimen>
 
+    <dimen name="small_view_margin">8dp</dimen>
+
+    <!-- Card View dimensions -->
+    <dimen name="phone_portrait_card_width">180dp</dimen>
+
+    <dimen name="phone_portrait_card_length">220dp</dimen>
+
+    <dimen name="card_corner_radius">2dp</dimen>
+
+    <dimen name="card_view_title_bottom_margin">24dp</dimen>
+
     <!-- Size of expanded image in location detail screen -->
     <dimen name="location_detail_expanded_image_height">256dp</dimen>
+    <dimen name="location_detail_expanded_app_bar_height">344dp</dimen>
 
     <dimen name="location_list_view_height">88dp</dimen>
     <dimen name="avatar_diameter">40dp</dimen>
+
+    <dimen name="fab_button_diameter">56dp</dimen>
 
     <!-- Different text sizes for the app -->
     <dimen name="list_item_primary_text_size">16sp</dimen>

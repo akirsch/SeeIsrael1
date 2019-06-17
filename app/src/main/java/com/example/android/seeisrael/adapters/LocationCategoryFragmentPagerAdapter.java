@@ -1,10 +1,12 @@
 package com.example.android.seeisrael.adapters;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class LocationCategoryFragmentPagerAdapter extends FragmentStatePagerAdapter {
+
 
     public LocationCategoryFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
