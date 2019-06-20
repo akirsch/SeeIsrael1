@@ -19,6 +19,8 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:layout_scrollFlags="scroll|enterAlways|snap"/>
 
+
+
     </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.viewpager.widget.ViewPager
