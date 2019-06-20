@@ -5,14 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.android.seeisrael.R;
-import com.example.android.seeisrael.models.Town;
+import com.example.android.seeisrael.models.Places;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static ArrayList<Town> sTownList;
+    public static ArrayList<Places> sPlacesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

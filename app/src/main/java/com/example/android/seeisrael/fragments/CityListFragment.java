@@ -15,11 +15,9 @@ import com.example.android.seeisrael.R;
 import com.example.android.seeisrael.activities.MainActivity;
 import com.example.android.seeisrael.adapters.TownListAdapter;
 import com.example.android.seeisrael.interfaces.SygicPlacesApiService;
-import com.example.android.seeisrael.models.Town;
-import com.example.android.seeisrael.models.TownListArrayContainerObject;
-import com.example.android.seeisrael.models.TownListQueryResponseObject;
+import com.example.android.seeisrael.models.Places;
+import com.example.android.seeisrael.models.TownQueryMainBodyResponse;
 import com.example.android.seeisrael.networking.RetrofitClientInstance;
-import com.example.android.seeisrael.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -40,11 +38,9 @@ import retrofit2.Response;
 public class CityListFragment extends Fragment {
 
     private Unbinder mUnbinder;
-    private ArrayList<Town> mTownList;
+    private ArrayList<Places> mPlacesList;
     private TownListAdapter mTownListAdapter;
     private MainActivity mParentActivity;
-    private TownListQueryResponseObject mTownListQueryResponseObject;
-    private TownListArrayContainerObject mTownListArrayContainerObject;
 
     private static final int LANSCAPE_COLUMN_NUMBER = 3;
     private static final int PORTRAIT_COLUMN_NUMBER = 2;
@@ -123,28 +119,21 @@ public class CityListFragment extends Fragment {
                 .getRetrofitInstance(mParentActivity)
                 .create(SygicPlacesApiService.class);
 
-        final Call<TownListQueryResponseObject> listOfTownsCall =
+        final Call<TownQueryMainBodyResponse> listOfTownsCall =
                 sygicPlacesApiService.getAllTownsInIsrael();
 
-        listOfTownsCall.enqueue(new Callback<TownListQueryResponseObject>() {
+        listOfTownsCall.enqueue(new Callback<TownQueryMainBodyResponse>() {
             @Override
-            public void onResponse(Call<TownListQueryResponseObject> call, Response<TownListQueryResponseObject> response) {
+            public void onResponse(Call<TownQueryMainBodyResponse> call, Response<TownQueryMainBodyResponse> response) {
 
-                if (response.isSuccessful()){
+                if (response.isSuccessful() && response.body() != null){
 
-                    mTownListQueryResponseObject = response.body();
+                    mPlacesList = (ArrayList<Places>) response.body().data.places;
 
-                    // access the nested object containing the list of towns we want from
-                    // within the main response JSON object
-                    mTownListArrayContainerObject = mTownListQueryResponseObject.getmTownListArrayContainerObject();
-
-                    // get the array of towns from within this object
-                    mTownList = (ArrayList<Town>) mTownListArrayContainerObject.getmListOfTowns();
-
-                    MainActivity.sTownList = mTownList;
+                    MainActivity.sPlacesList = mPlacesList;
 
                     // pass this list to the adapter
-                    mTownListAdapter.setTownList(mTownList);
+                    mTownListAdapter.setTownList(mPlacesList);
                     mTownListAdapter.notifyDataSetChanged();
 
                     // handle UI for a successful API call
@@ -163,7 +152,7 @@ public class CityListFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<TownListQueryResponseObject> call, Throwable throwable) {
+            public void onFailure(Call<TownQueryMainBodyResponse> call, Throwable throwable) {
 
                 mRecyclerView.setVisibility(View.GONE);
                 mProgresBar.setVisibility(View.GONE);

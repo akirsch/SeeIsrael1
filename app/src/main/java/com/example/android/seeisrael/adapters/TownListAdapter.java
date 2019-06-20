@@ -1,7 +1,7 @@
 package com.example.android.seeisrael.adapters;
 
 import android.content.Context;
-import android.content.res.Configuration;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +11,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.android.seeisrael.R;
-import com.example.android.seeisrael.models.Town;
-
-import org.w3c.dom.Text;
+import com.example.android.seeisrael.activities.LocationsActivity;
+import com.example.android.seeisrael.models.Places;
 
 import java.util.ArrayList;
 
@@ -25,7 +24,7 @@ import butterknife.ButterKnife;
 public class TownListAdapter extends RecyclerView.Adapter<TownListAdapter.ViewHolder> {
 
     private Context mContext;
-    private ArrayList<Town> mTownArrayList;
+    private ArrayList<Places> mPlacesArrayList;
 
     public TownListAdapter(){}
 
@@ -45,11 +44,11 @@ public class TownListAdapter extends RecyclerView.Adapter<TownListAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull TownListAdapter.ViewHolder viewHolder, int position) {
 
-        final Town currentTown = mTownArrayList.get(position);
+        final Places currentPlaces = mPlacesArrayList.get(position);
 
-        String townName = currentTown.getName();
+        String townName = currentPlaces.name;
 
-        String townImageUrl = currentTown.getThumbnailImageUrl();
+        String townImageUrl = currentPlaces.thumbnail_url;
 
         viewHolder.townNameView.setText(townName);
 
@@ -61,12 +60,24 @@ public class TownListAdapter extends RecyclerView.Adapter<TownListAdapter.ViewHo
                 .apply(requestOptions)
                 .into(viewHolder.townImageView);
 
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Context context = view.getContext();
+
+                Intent chosenLocationIntent = new Intent(context, LocationsActivity.class);
+                context.startActivity(chosenLocationIntent);
+
+            }
+        });
+
     }
 
     @Override
     public int getItemCount() {
-        if (mTownArrayList == null) return 0;
-        else return mTownArrayList.size();
+        if (mPlacesArrayList == null) return 0;
+        else return mPlacesArrayList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -87,8 +98,8 @@ public class TownListAdapter extends RecyclerView.Adapter<TownListAdapter.ViewHo
         }
     }
 
-    public void setTownList (ArrayList<Town> townList){
-        mTownArrayList = townList;
+    public void setTownList (ArrayList<Places> placesList){
+        mPlacesArrayList = placesList;
         notifyDataSetChanged();
     }
 }

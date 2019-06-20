@@ -16,7 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class HikingPlacesFragment extends Fragment {
+public class FamilyPlacesFragment extends Fragment {
 
     private Unbinder mUnbinder;
 
@@ -26,7 +26,7 @@ public class HikingPlacesFragment extends Fragment {
     @BindView(R.id.placeholder_view)
     TextView mTestView;
 
-    public HikingPlacesFragment(){}
+    public FamilyPlacesFragment(){}
 
     @Nullable
     @Override
@@ -44,3 +44,5 @@ public class HikingPlacesFragment extends Fragment {
         return rootView;
     }
 }
+
+
