@@ -13,8 +13,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:src="@mipmap/ic_launcher_round"
-        app:civ_border_color="#FF000000"
-        app:civ_border_width="2dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="21dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/roboto"
         android:textSize="16sp"
         android:textColor="@color/colorPrimaryText"
@@ -35,16 +33,16 @@
 
     <TextView
         android:id="@+id/list_item_secondary_textView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/roboto"
-        android:maxLines="2"
         android:lineHeight="20dp"
+        android:maxLines="2"
         android:textColor="@color/colorSecondaryText"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/list_item_primary_textView"
         app:layout_constraintTop_toBottomOf="@+id/list_item_primary_textView"
         tools:text="Officially called Westminster Palace, this remarkably \nboring edifice stands on the bank of the local...." />

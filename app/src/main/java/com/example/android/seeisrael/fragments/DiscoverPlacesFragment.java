@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -35,6 +36,7 @@ public class DiscoverPlacesFragment extends Fragment {
     private ArrayList<Places> mDiscoveryPlacesList;
     private PlacesListAdapter mPlacesListAdapter;
     private Places selectedPlace;
+    private final int API_RESULT_LIMIT = 80;
 
 
     @BindView(R.id.location_list_recycler_view)
@@ -86,6 +88,9 @@ public class DiscoverPlacesFragment extends Fragment {
         mLocationListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mLocationListRecyclerView.hasFixedSize();
 
+        mLocationListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                DividerItemDecoration.VERTICAL));
+
         mPlacesListAdapter = new PlacesListAdapter();
         mLocationListRecyclerView.setAdapter(mPlacesListAdapter);
 
@@ -127,7 +132,7 @@ public class DiscoverPlacesFragment extends Fragment {
                 .create(SygicPlacesApiService.class);
 
         final Call<TownQueryMainBodyResponse> listOfPlacesInTownCall
-                = sygicPlacesApiService.getAllPlacesInTown(placeId);
+                = sygicPlacesApiService.getAllPlacesInTown(placeId, API_RESULT_LIMIT);
 
 
         listOfPlacesInTownCall.enqueue(new Callback<TownQueryMainBodyResponse>() {

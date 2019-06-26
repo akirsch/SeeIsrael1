@@ -19,7 +19,7 @@
     <dimen name="location_detail_expanded_app_bar_height">344dp</dimen>
 
     <dimen name="location_list_view_height">88dp</dimen>
-    <dimen name="avatar_diameter">40dp</dimen>
+    <dimen name="avatar_diameter">60dp</dimen>
 
     <dimen name="fab_button_diameter">56dp</dimen>
 
