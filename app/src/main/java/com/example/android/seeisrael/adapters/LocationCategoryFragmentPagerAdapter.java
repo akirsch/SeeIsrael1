@@ -12,8 +12,11 @@ import com.example.android.seeisrael.fragments.SightSeeingPlacesFragment;
 import com.example.android.seeisrael.fragments.SportsFragment;
 import com.example.android.seeisrael.fragments.TransportFragment;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -21,56 +24,32 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 public class LocationCategoryFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
     private Context mContext;
-    private String[] categoryTitles = { mContext.getString(R.string.discover),
-                                        mContext.getString(R.string.sightseeing),
-                                        mContext.getString(R.string.eat),
-                                        mContext.getString(R.string.shopping),
-                                        mContext.getString(R.string.playing),
-                                        mContext.getString(R.string.travelling),
-                                        mContext.getString(R.string.hiking),
-                                        mContext.getString(R.string.sports)};
+    private List<Pair<String, Fragment>> mPages;
 
-    private static final int NUMBER_OF_CATEGORIES = 8;
+    public LocationCategoryFragmentPagerAdapter(Context context, @NonNull FragmentManager fm,
+                                                int behavior, List<Pair<String, Fragment>> pages) {
 
-    public LocationCategoryFragmentPagerAdapter(Context context, @NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);
+        mPages = pages;
         mContext = context;
     }
 
     @Override
     public Fragment getItem(int position) {
 
-        switch (position) {
-            case 0:
-                return new DiscoverPlacesFragment();
-            case 1:
-                return new SightSeeingPlacesFragment();
-            case 2:
-                return new EatingPlacesFragment();
-            case 3:
-                return new ShoppingPlacesFragment();
-            case 4:
-                return new FamilyPlacesFragment();
-            case 5:
-                return new TransportFragment();
-            case 6:
-                return new HikingPlacesFragment();
-            case 7:
-                return new SportsFragment();
-            default:
-                return null;
-        }
+
+                return mPages.get(position).second;
     }
 
     @Override
     public int getCount() {
-        return NUMBER_OF_CATEGORIES;
+        return mPages.size();
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
 
-        return categoryTitles[position];
+        return mPages.get(position).first;
     }
 }

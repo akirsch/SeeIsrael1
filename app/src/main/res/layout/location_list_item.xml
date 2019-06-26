@@ -7,7 +7,7 @@
     android:layout_height="@dimen/location_list_view_height">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
+        android:id="@+id/thumbnail_image"
         android:layout_width="@dimen/avatar_diameter"
         android:layout_height="@dimen/avatar_diameter"
         android:layout_marginStart="16dp"
@@ -29,7 +29,7 @@
         android:textColor="@color/colorPrimaryText"
         android:textStyle="bold"
         android:lineHeight="20dp"
-        app:layout_constraintStart_toEndOf="@+id/profile_image"
+        app:layout_constraintStart_toEndOf="@+id/thumbnail_image"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="The Houses of Parliament" />
 

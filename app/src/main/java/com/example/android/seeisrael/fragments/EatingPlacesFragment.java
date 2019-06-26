@@ -4,9 +4,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.seeisrael.R;
+import com.example.android.seeisrael.models.Places;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,10 +25,23 @@ public class EatingPlacesFragment extends Fragment {
     @BindView(R.id.location_list_recycler_view)
     RecyclerView mLocationListRecyclerView;
 
-    @BindView(R.id.placeholder_view)
+    @BindView(R.id.loading_spinner)
+    ProgressBar mProgresBar;
+
+    @BindView(R.id.empty_list_view)
     TextView mTestView;
 
     public EatingPlacesFragment(){}
+
+    // method to allow parent Fragment to pass data to child fragment upon initialization
+    public static EatingPlacesFragment instanceOfWithData (Places places){
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("places-key", places);
+
+        EatingPlacesFragment eatingPlacesFragment = new EatingPlacesFragment();
+        eatingPlacesFragment.setArguments(bundle);
+        return eatingPlacesFragment;
+    }
 
     @Nullable
     @Override

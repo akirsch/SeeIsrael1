@@ -2,6 +2,7 @@ package com.example.android.seeisrael.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.android.seeisrael.R;
 import com.example.android.seeisrael.activities.LocationsActivity;
 import com.example.android.seeisrael.models.Places;
+import com.example.android.seeisrael.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -66,8 +68,17 @@ public class TownListAdapter extends RecyclerView.Adapter<TownListAdapter.ViewHo
 
                 Context context = view.getContext();
 
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(Constants.SELECTED_PLACES_KEY, currentPlaces);
+
+
                 Intent chosenLocationIntent = new Intent(context, LocationsActivity.class);
-                context.startActivity(chosenLocationIntent);
+                chosenLocationIntent.putExtras(bundle);
+
+
+                if (chosenLocationIntent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(chosenLocationIntent);
+                }
 
             }
         });

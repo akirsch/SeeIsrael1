@@ -18,9 +18,9 @@ import com.example.android.seeisrael.interfaces.SygicPlacesApiService;
 import com.example.android.seeisrael.models.Places;
 import com.example.android.seeisrael.models.TownQueryMainBodyResponse;
 import com.example.android.seeisrael.networking.RetrofitClientInstance;
+import com.example.android.seeisrael.utils.Config;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -86,7 +86,7 @@ public class CityListFragment extends Fragment {
         mTownListAdapter = new TownListAdapter();
         mRecyclerView.setAdapter(mTownListAdapter);
 
-        if (hasNetworkConnection()){
+        if (Config.hasNetworkConnection(getContext())){
 
             getTownDataFromApi();
 
@@ -100,18 +100,6 @@ public class CityListFragment extends Fragment {
         return rootView;
     }
 
-    private boolean hasNetworkConnection(){
-
-        // check there is a network connection
-        ConnectivityManager cm = (ConnectivityManager) getActivity()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = Objects.requireNonNull(cm).getActiveNetworkInfo();
-
-
-        return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
-
-    }
 
     private void getTownDataFromApi(){
 
