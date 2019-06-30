@@ -6,12 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android.seeisrael.R;
-import com.example.android.seeisrael.activities.LocationsActivity;
 import com.example.android.seeisrael.adapters.LocationCategoryFragmentPagerAdapter;
-import com.example.android.seeisrael.adapters.TownListAdapter;
 import com.example.android.seeisrael.models.Places;
 import com.example.android.seeisrael.utils.Constants;
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -90,14 +87,33 @@ public class LocationsCategoriesListsFragment extends Fragment {
         // transparent toolbar
         mToolbar.setPadding(0, 25, 0, 0);
 
-        pages.add(new Pair<>(getString(R.string.discover), DiscoverPlacesFragment.instanceOfWithData(chosenPlace)));
-        pages.add(new Pair<>(getString(R.string.sightseeing), SightSeeingPlacesFragment.instanceOfWithData(chosenPlace)));
-        pages.add(new Pair<>(getString(R.string.eat), EatingPlacesFragment.instanceOfWithData(chosenPlace)));
-        pages.add(new Pair<>(getString(R.string.shopping), ShoppingPlacesFragment.instanceOfWithData(chosenPlace)));
-        pages.add(new Pair<>(getString(R.string.playing), FamilyPlacesFragment.instanceOfWithData(chosenPlace)));
-        pages.add(new Pair<>(getString(R.string.travelling), TransportFragment.instanceOfWithData(chosenPlace)));
-        pages.add(new Pair<>(getString(R.string.hiking), HikingPlacesFragment.instanceOfWithData(chosenPlace)));
-        pages.add(new Pair<>(getString(R.string.sports), SportsFragment.instanceOfWithData(chosenPlace)));
+        pages.add(new Pair<>(getString(R.string.discover),
+                MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
+                        getString(R.string.discovering_api_call_string))));
+        pages.add(new Pair<>(getString(R.string.sightseeing),
+                MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
+                        getString(R.string.sightseeing_api_call_string))));
+        pages.add(new Pair<>(getString(R.string.eat),
+                MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
+                        getString(R.string.eating_api_call_string))));
+        pages.add(new Pair<>(getString(R.string.shopping),
+                MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
+                        getString(R.string.shopping_api_call_string))));
+        pages.add(new Pair<>(getString(R.string.playing),
+                MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
+                        getString(R.string.playing_api_call_string))));
+        pages.add(new Pair<>(getString(R.string.relaxing),
+                MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
+                        getString(R.string.relaxing_api_call_string))));
+        pages.add(new Pair<>(getString(R.string.travelling),
+                MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
+                        getString(R.string.traveling_api_call_string))));
+        pages.add(new Pair<>(getString(R.string.hiking),
+                MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
+                        getString(R.string.hiking_api_call_string))));
+        pages.add(new Pair<>(getString(R.string.sports),
+                MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
+                        getString(R.string.sports_api_call_string))));
 
 
         mLocationCategoryFragmentPagerAdapter = new LocationCategoryFragmentPagerAdapter(getContext(),

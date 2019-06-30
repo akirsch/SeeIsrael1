@@ -27,4 +27,6 @@
     <dimen name="list_item_primary_text_size">16sp</dimen>
     <dimen name="list_item_secondary_text_size">14sp</dimen>
 
+    <dimen name="divider_decor_margin">92dp</dimen>
+
 </resources>

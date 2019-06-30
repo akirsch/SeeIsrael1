@@ -2,16 +2,6 @@ package com.example.android.seeisrael.adapters;
 
 import android.content.Context;
 
-import com.example.android.seeisrael.R;
-import com.example.android.seeisrael.fragments.DiscoverPlacesFragment;
-import com.example.android.seeisrael.fragments.EatingPlacesFragment;
-import com.example.android.seeisrael.fragments.FamilyPlacesFragment;
-import com.example.android.seeisrael.fragments.HikingPlacesFragment;
-import com.example.android.seeisrael.fragments.ShoppingPlacesFragment;
-import com.example.android.seeisrael.fragments.SightSeeingPlacesFragment;
-import com.example.android.seeisrael.fragments.SportsFragment;
-import com.example.android.seeisrael.fragments.TransportFragment;
-
 import java.util.List;
 
 import androidx.annotation.NonNull;

@@ -29,10 +29,41 @@
 
     <string name="playing">Play</string>
 
+    <string name="relaxing">Relax</string>
+
     <string name="sightseeing">Sight Seeing</string>
 
     <string name="travelling">Travel</string>
+
+    <!-- String names to pass to category specific api calls -->
+    <string name="discovering_api_call_string">discovering</string>
+
+    <string name="eating_api_call_string">eating</string>
+
+    <string name="hiking_api_call_string">hiking</string>
+
+    <string name="shopping_api_call_string">shopping</string>
+
+    <string name="playing_api_call_string">playing</string>
+
+    <string name="sightseeing_api_call_string">sightseeing</string>
+
+    <string name="night_life_api_call_string">going_out</string>
+
+    <string name="sports_api_call_string">doing_sports</string>
+
+    <string name="traveling_api_call_string">traveling</string>
+
+    <string name="relaxing_api_call_string">relaxing</string>
+
+    <string name="favorites_icon">Favorites</string>
+
+
     <string name="title_activity_maps">Map</string>
+
+    <string name="content_cant_be_displayed">Sorry, the content you requested cnt be diplayed right now, /nplease try again later. </string>
+
+
 
 
 </resources>

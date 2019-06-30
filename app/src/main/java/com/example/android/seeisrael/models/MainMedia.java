@@ -5,24 +5,12 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class MainMedia implements Parcelable {
 
-    @SerializedName("main_media")
-    private ArrayList<LocationMedia> mMediaObjectArray;
-
-    public MainMedia(ArrayList<LocationMedia> mMediaObjectArray) {
-        this.mMediaObjectArray = mMediaObjectArray;
-    }
-
-    public ArrayList<LocationMedia> getmMediaObjectArray() {
-        return mMediaObjectArray;
-    }
-
-    public void setmMediaObjectArray(ArrayList<LocationMedia> mMediaObjectArray) {
-        this.mMediaObjectArray = mMediaObjectArray;
-    }
+    @SerializedName("media")
+    public List<Media> media;
 
     @Override
     public int describeContents() {
@@ -31,11 +19,14 @@ public class MainMedia implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(this.mMediaObjectArray);
+        dest.writeTypedList(this.media);
+    }
+
+    public MainMedia() {
     }
 
     protected MainMedia(Parcel in) {
-        this.mMediaObjectArray = in.createTypedArrayList(LocationMedia.CREATOR);
+        this.media = in.createTypedArrayList(Media.CREATOR);
     }
 
     public static final Parcelable.Creator<MainMedia> CREATOR = new Parcelable.Creator<MainMedia>() {
@@ -50,3 +41,4 @@ public class MainMedia implements Parcelable {
         }
     };
 }
+

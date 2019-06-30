@@ -14,13 +14,13 @@ import com.example.android.seeisrael.models.Places;
 import com.example.android.seeisrael.models.TownQueryMainBodyResponse;
 import com.example.android.seeisrael.networking.RetrofitClientInstance;
 import com.example.android.seeisrael.utils.Config;
+import com.example.android.seeisrael.utils.Constants;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -30,13 +30,15 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DiscoverPlacesFragment extends Fragment {
+public class MyViewPagerCategoryFragment extends Fragment {
 
     private Unbinder mUnbinder;
     private ArrayList<Places> mDiscoveryPlacesList;
     private PlacesListAdapter mPlacesListAdapter;
     private Places selectedPlace;
-    private final int API_RESULT_LIMIT = 80;
+    private String selectedCategory;
+    private final int API_RESULT_LIMIT = 50;
+
 
 
     @BindView(R.id.location_list_recycler_view)
@@ -48,16 +50,17 @@ public class DiscoverPlacesFragment extends Fragment {
     @BindView(R.id.empty_list_view)
     TextView mEmptyListView;
 
-    public DiscoverPlacesFragment() {}
+    public MyViewPagerCategoryFragment() {}
 
     // method to allow parent Fragment to pass data to child fragment upon initialization
-    public static DiscoverPlacesFragment instanceOfWithData(Places places) {
+    public static MyViewPagerCategoryFragment instanceOfWithData(Places places, String searchCategory) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable("places-key", places);
+        bundle.putParcelable(Constants.SELECTED_PLACES_KEY, places);
+        bundle.putString(Constants.SELECTED_CATEGORY_KEY, searchCategory);
 
-        DiscoverPlacesFragment discoverPlacesFragment = new DiscoverPlacesFragment();
-        discoverPlacesFragment.setArguments(bundle);
-        return discoverPlacesFragment;
+        MyViewPagerCategoryFragment myViewPagerCategoryFragment = new MyViewPagerCategoryFragment();
+        myViewPagerCategoryFragment.setArguments(bundle);
+        return myViewPagerCategoryFragment;
     }
 
     @Override
@@ -88,8 +91,7 @@ public class DiscoverPlacesFragment extends Fragment {
         mLocationListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mLocationListRecyclerView.hasFixedSize();
 
-        mLocationListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
-                DividerItemDecoration.VERTICAL));
+        mLocationListRecyclerView.addItemDecoration(Config.createDividerDecorWithMargin(getContext()));
 
         mPlacesListAdapter = new PlacesListAdapter();
         mLocationListRecyclerView.setAdapter(mPlacesListAdapter);
@@ -111,28 +113,29 @@ public class DiscoverPlacesFragment extends Fragment {
 
         if (getArguments() != null) {
             // Get instance of selected Town
-            selectedPlace = getArguments().getParcelable("places-key");
+            selectedPlace = getArguments().getParcelable(Constants.SELECTED_PLACES_KEY);
+            selectedCategory = getArguments().getString(Constants.SELECTED_CATEGORY_KEY);
 
             if (selectedPlace != null) {
                 // get Id of selected town to use for call to API
                 String selectedPlaceId = selectedPlace.id;
 
                 if (Config.hasNetworkConnection(getContext())) {
-                    getCategoryRelevantDataFromApi(selectedPlaceId);
+                    getCategoryRelevantDataFromApi(selectedPlaceId, selectedCategory);
                 }
             }
 
         }
     }
 
-    private void getCategoryRelevantDataFromApi(String placeId) {
+    private void getCategoryRelevantDataFromApi(String placeId, String category) {
 
         SygicPlacesApiService sygicPlacesApiService = RetrofitClientInstance
                 .getRetrofitInstance(getContext())
                 .create(SygicPlacesApiService.class);
 
         final Call<TownQueryMainBodyResponse> listOfPlacesInTownCall
-                = sygicPlacesApiService.getAllPlacesInTown(placeId, API_RESULT_LIMIT);
+                = sygicPlacesApiService.getListOfPlacesByCategory(placeId, category, API_RESULT_LIMIT);
 
 
         listOfPlacesInTownCall.enqueue(new Callback<TownQueryMainBodyResponse>() {

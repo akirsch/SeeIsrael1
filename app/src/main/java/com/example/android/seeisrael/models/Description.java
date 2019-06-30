@@ -8,10 +8,10 @@ import com.google.gson.annotations.SerializedName;
 public class Description implements Parcelable {
 
     @SerializedName("text")
-    private String longDescription;
+    public String longDescription;
 
     @SerializedName("link")
-    private String wikiUrl;
+    public String wikiUrl;
 
     public Description(String longDescription, String wikiUrl) {
         this.longDescription = longDescription;

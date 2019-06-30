@@ -1,5 +1,6 @@
 package com.example.android.seeisrael.activities;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import com.example.android.seeisrael.R;
@@ -17,9 +18,10 @@ public class LocationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_locations);
 
-        // Get the town selected from the intent which started this activity, and
-        // pass it to the Fragment within this activity which displays
-        // the viewpager with list of categories of locations to choose from
+
+        // get reference to embedded Fragment
+        categoriesListsFragment = (LocationsCategoriesListsFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.location_category_selection_fragment);
 
 
     }

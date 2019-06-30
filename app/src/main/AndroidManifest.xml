@@ -54,11 +54,18 @@
                 android:value=".activities.MainActivity" />
         </activity>
 
-        <activity android:name=".activities.LocationDetailActivity"/>
+        <activity
+            android:name=".activities.LocationDetailsActivity"
+            android:parentActivityName=".activities.LocationsActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".activities.LocationsActivity" />
 
+        </activity>
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
     </application>
 
 </manifest>

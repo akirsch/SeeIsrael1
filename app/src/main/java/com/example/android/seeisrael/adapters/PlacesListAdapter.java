@@ -1,6 +1,8 @@
 package com.example.android.seeisrael.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +11,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.android.seeisrael.R;
+import com.example.android.seeisrael.activities.LocationDetailsActivity;
 import com.example.android.seeisrael.models.Places;
+import com.example.android.seeisrael.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -46,6 +50,9 @@ public class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.Vi
 
         final Places currentPlaces = mPlacesArrayList.get(position);
 
+        final String currentPlaceId = currentPlaces.id;
+        final String currentPlaceName = currentPlaces.name;
+
         String placeName= currentPlaces.name;
 
         String placeSummary = currentPlaces.summary;
@@ -71,6 +78,25 @@ public class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.Vi
                     .apply(requestOptions)
                     .into(viewHolder.circleThumbnailImageView);
         }
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Context context = view.getContext();
+
+                Bundle bundle = new Bundle();
+                bundle.putString(Constants.SELECTED_PLACE_ID_KEY, currentPlaceId);
+                bundle.putString(Constants.SELECTED_PLACE_NAME_KEY, currentPlaceName);
+
+                Intent placeDetailsIntent = new Intent(context, LocationDetailsActivity.class);
+                placeDetailsIntent.putExtras(bundle);
+
+                if (placeDetailsIntent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(placeDetailsIntent);
+                }
+            }
+        });
 
 
     }

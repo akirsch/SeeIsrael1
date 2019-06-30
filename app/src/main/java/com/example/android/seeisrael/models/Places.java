@@ -20,9 +20,10 @@ public class Places implements Parcelable {
     @SerializedName("perex")
     public String summary;
 
-
     @SerializedName("thumbnail_url")
     public String thumbnail_url;
+
+    public Places(){}
 
     public Places(String id, String name, String thumbnail_url) {
         this.id = id;
@@ -33,6 +34,18 @@ public class Places implements Parcelable {
     public Places(String name){
         this.name = name;
     }
+
+    public static final Creator<Places> CREATOR = new Creator<Places>() {
+        @Override
+        public Places createFromParcel(Parcel in) {
+            return new Places(in);
+        }
+
+        @Override
+        public Places[] newArray(int size) {
+            return new Places[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -88,15 +101,4 @@ public class Places implements Parcelable {
         this.thumbnail_url = in.readString();
     }
 
-    public static final Creator<Places> CREATOR = new Creator<Places>() {
-        @Override
-        public Places createFromParcel(Parcel source) {
-            return new Places(source);
-        }
-
-        @Override
-        public Places[] newArray(int size) {
-            return new Places[size];
-        }
-    };
 }
