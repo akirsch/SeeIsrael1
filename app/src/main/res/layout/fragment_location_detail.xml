@@ -12,86 +12,81 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/location_detail_expanded_app_bar_height"
         android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:liftOnScroll="true">
 
-
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginEnd="64dp"
-            app:expandedTitleMarginStart="48dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            android:layout_height="match_parent">
 
-            <LinearLayout
+
+            <ImageView
+                android:id="@+id/location_image_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:id="@+id/location_image_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/location_detail_expanded_image_height"
-                    android:contentDescription="@string/location_image_content_description"
-                    android:fitsSystemWindows="true"
-                    android:scaleType="centerCrop"
-                    android:src="@mipmap/ic_launcher_round"
-                    app:layout_collapseMode="parallax" />
-
-                <TextView
-                    android:id="@+id/location_title_view"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/standard_view_margin"
-                    android:layout_marginTop="@dimen/small_view_margin"
-                    android:fontFamily="@font/roboto"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                    android:textColor="@android:color/white"
-                    tools:text="Tower of David" />
-
-                <TextView
-                    android:id="@+id/location_subtitle_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/standard_view_margin"
-                    android:layout_marginTop="@dimen/small_view_margin"
-                    android:layout_marginBottom="@dimen/small_view_margin"
-                    android:fontFamily="@font/roboto"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-                    android:textColor="@android:color/white"
-                    tools:text="Jerusalem, Israel" />
-
-            </LinearLayout>
+                android:layout_height="@dimen/location_detail_expanded_image_height"
+                android:contentDescription="@string/location_image_content_description"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_launcher_round"
+                android:transitionName="@string/transition_image"/>
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                android:layout_alignParentTop="true"/>
 
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            <TextView
+                android:id="@+id/location_title_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/location_image_view"
+                android:layout_marginStart="@dimen/standard_view_margin"
+                android:layout_marginTop="@dimen/small_view_margin"
+                android:fontFamily="@font/roboto"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                android:textColor="@android:color/white"
+                tools:text="Tower of David" />
+
+            <TextView
+                android:id="@+id/location_subtitle_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/location_title_view"
+                android:layout_marginStart="@dimen/standard_view_margin"
+                android:layout_marginTop="@dimen/small_view_margin"
+                android:layout_marginBottom="@dimen/small_view_margin"
+                android:fontFamily="@font/roboto"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:textColor="@android:color/white"
+                tools:text="Jerusalem, Israel" />
+
+        </RelativeLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/activity_background_color"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
             android:id="@+id/place_details_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/standard_view_margin"
+            android:layout_marginEnd="@dimen/standard_view_margin">
 
             <at.blogc.android.views.ExpandableTextView
                 android:id="@+id/expandableTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/standard_view_margin"
+                android:layout_marginStart="@dimen/standard_view_margin"
+                android:layout_marginTop="@dimen/standard_view_margin"
+                android:layout_marginEnd="@dimen/standard_view_margin"
+                android:layout_marginBottom="@dimen/small_view_margin"
                 android:ellipsize="end"
                 android:fontFamily="@font/roboto"
                 android:maxLines="3"
@@ -104,13 +99,17 @@
 
             <Button
                 android:id="@+id/button_toggle"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/small_view_margin"
+                android:layout_marginStart="4dp"
                 android:layout_marginBottom="@dimen/small_view_margin"
+                android:backgroundTint="@android:color/transparent"
                 android:fontFamily="@font/roboto"
                 android:text="@string/see_more"
-                android:textColor="@color/colorPrimaryText" />
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold" />
 
             <View
                 android:layout_width="match_parent"
@@ -129,7 +128,7 @@
                 android:drawablePadding="@dimen/standard_view_margin"
                 android:drawableTint="@color/color_icon_default"
                 android:fontFamily="@font/roboto"
-                android:textColor="@color/colorPrimaryText"
+                android:textColorLink="@color/colorPrimaryText"
                 android:textSize="@dimen/list_item_primary_text_size"
                 tools:text="02-651-2303" />
 
@@ -154,11 +153,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/standard_view_margin"
                 android:layout_marginTop="@dimen/standard_view_margin"
+                android:autoLink="email"
                 android:drawableStart="@drawable/ic_email"
                 android:drawablePadding="@dimen/standard_view_margin"
                 android:drawableTint="@color/color_icon_default"
                 android:fontFamily="@font/roboto"
-                android:textColor="@color/colorPrimaryText"
+                android:textColorLink="@color/colorPrimaryText"
                 android:textSize="@dimen/list_item_primary_text_size"
                 tools:text="info@toweroflondon.org.uk" />
 
@@ -175,7 +175,7 @@
                 android:fontFamily="@font/roboto"
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="@dimen/list_item_primary_text_size"
-                tools:text="See 360 Video" />
+                android:text="See 360 Video" />
 
             <TextView
                 android:id="@+id/wikipedia_link_tv"
@@ -189,7 +189,8 @@
                 android:fontFamily="@font/roboto"
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="@dimen/list_item_primary_text_size"
-                tools:text="See more information" />
+                android:autoLink="web"
+                android:text="@string/wikipedia_link" />
 
 
             <TextView
@@ -225,15 +226,27 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_button"
         android:layout_width="@dimen/fab_button_diameter"
         android:layout_height="@dimen/fab_button_diameter"
         android:layout_margin="@dimen/standard_view_margin"
         android:backgroundTint="@color/colorAccent"
         android:clickable="true"
+        android:elevation="6dp"
         android:focusable="true"
         android:src="@drawable/ic_add"
+        app:borderWidth="0dp"
         app:layout_anchor="@id/location_image_view"
-        app:layout_anchorGravity="bottom|right|end" />
+        app:layout_anchorGravity="bottom|right|end"
+        app:tint="@android:color/white" />
+
+    <ProgressBar
+        android:id="@+id/loading_spinner"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
 
     <TextView
         android:id="@+id/content_cant_be_displayed_view"

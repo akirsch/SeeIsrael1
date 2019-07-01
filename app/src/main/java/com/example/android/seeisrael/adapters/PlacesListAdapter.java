@@ -18,6 +18,7 @@ import com.example.android.seeisrael.utils.Constants;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -79,22 +80,22 @@ public class PlacesListAdapter extends RecyclerView.Adapter<PlacesListAdapter.Vi
                     .into(viewHolder.circleThumbnailImageView);
         }
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        viewHolder.itemView.setOnClickListener(view -> {
 
-                Context context = view.getContext();
+            Context context = view.getContext();
 
-                Bundle bundle = new Bundle();
-                bundle.putString(Constants.SELECTED_PLACE_ID_KEY, currentPlaceId);
-                bundle.putString(Constants.SELECTED_PLACE_NAME_KEY, currentPlaceName);
 
-                Intent placeDetailsIntent = new Intent(context, LocationDetailsActivity.class);
-                placeDetailsIntent.putExtras(bundle);
+            viewHolder.circleThumbnailImageView.setTransitionName(context.getString(R.string.transition_image));
 
-                if (placeDetailsIntent.resolveActivity(context.getPackageManager()) != null) {
-                    context.startActivity(placeDetailsIntent);
-                }
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.SELECTED_PLACE_ID_KEY, currentPlaceId);
+            bundle.putString(Constants.SELECTED_PLACE_NAME_KEY, currentPlaceName);
+
+            Intent placeDetailsIntent = new Intent(context, LocationDetailsActivity.class);
+            placeDetailsIntent.putExtras(bundle);
+
+            if (placeDetailsIntent.resolveActivity(context.getPackageManager()) != null) {
+                context.startActivity(placeDetailsIntent);
             }
         });
 

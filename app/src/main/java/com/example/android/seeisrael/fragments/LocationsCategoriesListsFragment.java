@@ -76,6 +76,7 @@ public class LocationsCategoriesListsFragment extends Fragment {
 
         mToolbar = getActivity().findViewById(R.id.toolbar);
 
+
         // Set the Toolbar as Action Bar
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
 

@@ -1,5 +1,6 @@
 package com.example.android.seeisrael.activities;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import com.example.android.seeisrael.R;
@@ -13,5 +14,7 @@ public class LocationDetailsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loction_detail);
+
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
     }
 }

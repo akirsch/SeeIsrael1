@@ -1,5 +1,8 @@
 package com.example.android.seeisrael.fragments;
 
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,8 +10,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -21,6 +27,8 @@ import com.example.android.seeisrael.models.PlaceDetailsMainBodyResponse;
 import com.example.android.seeisrael.networking.RetrofitClientInstance;
 import com.example.android.seeisrael.utils.Config;
 import com.example.android.seeisrael.utils.Constants;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 import java.util.Objects;
@@ -45,13 +53,17 @@ public class LocationDetailsFragment extends Fragment {
     private String mSelectedPlaceName;
     private String imageUrlToDisplay;
     private Place selectedPlace;
+    private String TAG;
 
     public LocationDetailsFragment(){}
 
     private Toolbar mToolbar;
 
+    @BindView(R.id.appbar)
+    AppBarLayout appBarLayout;
+
     @BindView(R.id.location_image_view)
-    ImageView locatonImageView;
+    ImageView locationImageView;
 
     @BindView(R.id.location_title_view)
     TextView locationTitleTv;
@@ -60,7 +72,10 @@ public class LocationDetailsFragment extends Fragment {
     TextView locationSubtitleTv;
 
     @BindView(R.id.expandableTextView)
-    ExpandableTextView locationDescription;
+    ExpandableTextView expandableTextView;
+
+    @BindView(R.id.button_toggle)
+    Button buttonToggle;
 
     @BindView(R.id.location_phone_number_tv)
     TextView locationPhoneNumberTv;
@@ -86,8 +101,14 @@ public class LocationDetailsFragment extends Fragment {
     @BindView(R.id.place_details_linear_layout)
     LinearLayout detailsLinearLayoutContainer;
 
+    @BindView(R.id.loading_spinner)
+    ProgressBar loadingProgressBar;
+
     @BindView(R.id.content_cant_be_displayed_view)
     TextView noContentToDisplayView;
+
+    @BindView(R.id.fab_button)
+    FloatingActionButton fabButton;
 
     @Nullable
     @Override
@@ -97,51 +118,63 @@ public class LocationDetailsFragment extends Fragment {
 
         mUnbinder = ButterKnife.bind(this, rootView);
 
+        loadingProgressBar.setVisibility(View.VISIBLE);
         noContentToDisplayView.setVisibility(View.GONE);
+        appBarLayout.setVisibility(View.GONE);
+        detailsLinearLayoutContainer.setVisibility(View.GONE);
+        fabButton.setVisibility(View.GONE);
+
+
+
 
         return rootView;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+
         super.onActivityCreated(savedInstanceState);
+
+        TAG = getActivity().getClass().getSimpleName();
 
         mSelectedPlaceId = Objects.requireNonNull(getActivity()).getIntent().getStringExtra(Constants.SELECTED_PLACE_ID_KEY);
         mSelectedPlaceName = Objects.requireNonNull(getActivity()).getIntent().getStringExtra(Constants.SELECTED_PLACE_NAME_KEY);
 
         // configure the toolbar
         mToolbar = getActivity().findViewById(R.id.toolbar);
+        mToolbar.setBackgroundColor(Color.TRANSPARENT);
 
         // Set the Toolbar as Action Bar
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
 
-        // Set title of action bar to appropriate label for this Activity
-        Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setTitle(mSelectedPlaceName);
+        Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setTitle("");
         Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         // Set the padding to match the Status Bar height (to avoid title being cut off by
         // transparent toolbar
         mToolbar.setPadding(0, 25, 0, 0);
 
-        Log.v("api_request_string", Constants.SYGIC_API_BASE_URL + mSelectedPlaceId );
-        getPlaceDetailsFromApi(mSelectedPlaceId);
 
-//        if (mSelectedPlaceId != null){
-//            if (Config.hasNetworkConnection(Objects.requireNonNull(getContext()))){
-//
-//            }
-//        }
+        if (mSelectedPlaceId != null){
+            if (Config.hasNetworkConnection(Objects.requireNonNull(getContext()))){
+                 getPlaceDetailsFromApi(mSelectedPlaceId);
+            }
+        }
 
     }
 
     public void getPlaceDetailsFromApi(String placeId){
+
+        // replace the ":" in the placeId String with encoded url value due to bug #3080 in Retrofit which
+        // is not encoding this symbol automatically
+        String encodedPlaceId = placeId.replace(":", "%3A");
 
         SygicPlacesApiService sygicPlacesApiService = RetrofitClientInstance
                 .getRetrofitInstance(getContext())
                 .create(SygicPlacesApiService.class);
 
         final Call<PlaceDetailsMainBodyResponse> placeDetailsCall
-                = sygicPlacesApiService.getPlaceDetails(placeId);
+                = sygicPlacesApiService.getPlaceDetails(encodedPlaceId);
 
         placeDetailsCall.enqueue(new Callback<PlaceDetailsMainBodyResponse>() {
             @Override
@@ -152,7 +185,10 @@ public class LocationDetailsFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null){
                     selectedPlace = response.body().data.place;
 
+                    appBarLayout.setVisibility(View.VISIBLE);
                     detailsLinearLayoutContainer.setVisibility(View.VISIBLE);
+                    fabButton.setVisibility(View.VISIBLE);
+                    loadingProgressBar.setVisibility(View.GONE);
                     noContentToDisplayView.setVisibility(View.GONE);
 
                     if (selectedPlace.name != null && !selectedPlace.name.isEmpty()){
@@ -165,8 +201,11 @@ public class LocationDetailsFragment extends Fragment {
 
                     if (selectedPlace.description.longDescription != null
                             && !selectedPlace.description.longDescription.isEmpty()) {
-                        locationDescription.setText(selectedPlace.description.longDescription);
+                        expandableTextView.setText(selectedPlace.description.longDescription);
                     }
+
+                    // configure behaviour of expandable text view toggle button
+                    setUpToggleButton();
 
                     // get photo of location from array of Media objects to display in imageView
                     imageUrlToDisplay = null;
@@ -185,15 +224,29 @@ public class LocationDetailsFragment extends Fragment {
 
                     setUpImageView(imageUrlToDisplay);
 
-                    locationPhoneNumberTv.setText(selectedPlace.phoneNumber);
+                    if (selectedPlace.phoneNumber != null && !selectedPlace.phoneNumber.isEmpty()){
+                        locationPhoneNumberTv.setText(selectedPlace.phoneNumber);
+                    } else {
+                        locationPhoneNumberTv.setVisibility(View.GONE);
+                    }
 
-                    locationAddressTv.setText(selectedPlace.address);
 
-                    locationEmailAddressTv.setText(selectedPlace.email);
+                    if (selectedPlace.address != null && !selectedPlace.address.isEmpty()){
+                        locationAddressTv.setText(selectedPlace.address);
+                    } else {
+                        locationAddressTv.setVisibility(View.GONE);
+                    }
+
+                    if (selectedPlace.email != null && !selectedPlace.email.isEmpty()){
+                        locationEmailAddressTv.setText(selectedPlace.email);
+                    } else {
+                        locationEmailAddressTv.setVisibility(View.GONE);
+                    }
 
                     if (selectedPlace.description.wikiUrl != null
                             && !selectedPlace.description.wikiUrl.isEmpty()){
-                        wikipediaLinkTv.setText(selectedPlace.description.wikiUrl);
+                        wikipediaLinkTv.setVisibility(View.VISIBLE);
+                        setUpWikipediaIntent(selectedPlace.description.wikiUrl);
                     } else {
                         wikipediaLinkTv.setVisibility(View.GONE);
                     }
@@ -207,18 +260,20 @@ public class LocationDetailsFragment extends Fragment {
                     }
 
                 } else {
+                    appBarLayout.setVisibility(View.GONE);
                     detailsLinearLayoutContainer.setVisibility(View.GONE);
+                    loadingProgressBar.setVisibility(View.GONE);
                     noContentToDisplayView.setVisibility(View.VISIBLE);
-                    Log.v("error_log_tag", "else block called in api response");
                 }
 
             }
 
             @Override
             public void onFailure(Call<PlaceDetailsMainBodyResponse> call, Throwable t) {
+                appBarLayout.setVisibility(View.GONE);
                 detailsLinearLayoutContainer.setVisibility(View.GONE);
+                loadingProgressBar.setVisibility(View.GONE);
                 noContentToDisplayView.setVisibility(View.VISIBLE);
-                Log.v("error_log", "onFail called in retrofit call back");
             }
         });
 
@@ -236,13 +291,42 @@ public class LocationDetailsFragment extends Fragment {
             Glide.with(Objects.requireNonNull(getContext()))
                     .load(imageUrlToDisplay)
                     .apply(requestOptions)
-                    .into(locatonImageView);
+                    .into(locationImageView);
         } else {
             Glide.with(Objects.requireNonNull(getContext()))
                     .load(R.mipmap.ic_launcher)
                     .apply(requestOptions)
-                    .into(locatonImageView);
+                    .into(locationImageView);
         }
+    }
+
+    private void setUpToggleButton(){
+
+        expandableTextView.setInterpolator(new OvershootInterpolator());
+
+        buttonToggle.setOnClickListener(v -> {
+            buttonToggle.setText(expandableTextView.isExpanded() ? R.string.see_more : R.string.see_less);
+            expandableTextView.toggle();
+        });
+
+        expandableTextView.addOnExpandListener(new ExpandableTextView.OnExpandListener() {
+            @Override
+            public void onExpand(@NonNull ExpandableTextView view) {
+                Log.d(TAG, "ExpandableTextView expanded");
+            }
+
+            @Override
+            public void onCollapse(@NonNull ExpandableTextView view) {
+                Log.d(TAG, "ExpandableTextView collapsed");
+            }
+        });
+    }
+
+    private void setUpWikipediaIntent(String wikipediaUrl){
+        wikipediaLinkTv.setOnClickListener(v -> {
+            Intent wikipediaIntent= new Intent(Intent.ACTION_VIEW, Uri.parse(wikipediaUrl));
+            startActivity(wikipediaIntent);
+        });
     }
 
     @Override

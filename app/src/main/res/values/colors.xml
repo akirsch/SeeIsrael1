@@ -7,5 +7,7 @@
     <color name="colorSecondaryText">#FC000000</color>
     <color name="colorBackground">#eeeeee</color>
     <color name="color_icon_default">#8C000000</color>
-    <color name="color_divider">#99000000</color>
+    <color name="color_divider">#BDBDBD</color>
+    <color name="activity_background_color">#F5F5F5</color>
+
 </resources>

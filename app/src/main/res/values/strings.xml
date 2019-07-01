@@ -58,12 +58,15 @@
 
     <string name="favorites_icon">Favorites</string>
 
+    <!-- String for managing a shared element transition animation between different screens-->
+    <string name="transition_image">transition_image</string>
+
+    <string name="wikipedia_link">See wikipedia entry for this location</string>
+
 
     <string name="title_activity_maps">Map</string>
 
     <string name="content_cant_be_displayed">Sorry, the content you requested cnt be diplayed right now, /nplease try again later. </string>
-
-
 
 
 </resources>

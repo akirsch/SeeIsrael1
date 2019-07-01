@@ -16,7 +16,7 @@
 
     <!-- Size of expanded image in location detail screen -->
     <dimen name="location_detail_expanded_image_height">256dp</dimen>
-    <dimen name="location_detail_expanded_app_bar_height">344dp</dimen>
+    <dimen name="location_detail_expanded_app_bar_height">360dp</dimen>
 
     <dimen name="location_list_view_height">88dp</dimen>
     <dimen name="avatar_diameter">60dp</dimen>
@@ -28,5 +28,8 @@
     <dimen name="list_item_secondary_text_size">14sp</dimen>
 
     <dimen name="divider_decor_margin">92dp</dimen>
+
+    <!-- set dimen for length of faded text at end of place description text view-->
+    <dimen name="align_twenty">20dp</dimen>
 
 </resources>

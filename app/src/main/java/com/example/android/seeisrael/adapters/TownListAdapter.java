@@ -62,25 +62,22 @@ public class TownListAdapter extends RecyclerView.Adapter<TownListAdapter.ViewHo
                 .apply(requestOptions)
                 .into(viewHolder.townImageView);
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        viewHolder.itemView.setOnClickListener(view -> {
 
-                Context context = view.getContext();
+            Context context = view.getContext();
 
-                Bundle bundle = new Bundle();
-                bundle.putParcelable(Constants.SELECTED_PLACES_KEY, currentPlaces);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Constants.SELECTED_PLACES_KEY, currentPlaces);
 
 
-                Intent chosenLocationIntent = new Intent(context, LocationsActivity.class);
-                chosenLocationIntent.putExtras(bundle);
+            Intent chosenLocationIntent = new Intent(context, LocationsActivity.class);
+            chosenLocationIntent.putExtras(bundle);
 
 
-                if (chosenLocationIntent.resolveActivity(context.getPackageManager()) != null) {
-                    context.startActivity(chosenLocationIntent);
-                }
-
+            if (chosenLocationIntent.resolveActivity(context.getPackageManager()) != null) {
+                context.startActivity(chosenLocationIntent);
             }
+
         });
 
     }

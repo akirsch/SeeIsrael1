@@ -26,5 +26,5 @@ public interface SygicPlacesApiService {
 
     @Headers("x-api-key: " + Constants.SYGIC_PLACES_API_KEY_HEADER)
     @GET("{id}")
-    Call<PlaceDetailsMainBodyResponse> getPlaceDetails(@Path(value = "id") String id);
+    Call<PlaceDetailsMainBodyResponse> getPlaceDetails(@Path(value = "id", encoded = true) String id);
 }

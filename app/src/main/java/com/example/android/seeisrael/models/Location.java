@@ -10,7 +10,6 @@ public class Location implements Parcelable {
     @SerializedName("lat")
     public double latitude;
 
-
     @SerializedName("lng")
     public double longitude;
 
