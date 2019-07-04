@@ -2,12 +2,14 @@ package com.example.android.seeisrael.fragments;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.android.seeisrael.R;
+import com.example.android.seeisrael.database.PlacesDatabase;
 import com.example.android.seeisrael.interfaces.SygicPlacesApiService;
 import com.example.android.seeisrael.models.Media;
 import com.example.android.seeisrael.models.Place;
@@ -27,6 +30,8 @@ import com.example.android.seeisrael.models.PlaceDetailsMainBodyResponse;
 import com.example.android.seeisrael.networking.RetrofitClientInstance;
 import com.example.android.seeisrael.utils.Config;
 import com.example.android.seeisrael.utils.Constants;
+import com.example.android.seeisrael.viewmodels.AddPlaceViewModel;
+import com.example.android.seeisrael.viewmodels.AddPlaceViewModelFactory;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -37,7 +42,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import at.blogc.android.views.ExpandableTextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,8 +63,12 @@ public class LocationDetailsFragment extends Fragment {
     private String imageUrlToDisplay;
     private Place selectedPlace;
     private String TAG;
+    private AddPlaceViewModelFactory factory;
+    private AddPlaceViewModel viewModel;
+    private PlacesDatabase mDb;
 
-    public LocationDetailsFragment(){}
+    public LocationDetailsFragment() {
+    }
 
     private Toolbar mToolbar;
 
@@ -110,11 +123,18 @@ public class LocationDetailsFragment extends Fragment {
     @BindView(R.id.fab_button)
     FloatingActionButton fabButton;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        final View rootView =  inflater.inflate(R.layout.fragment_location_detail, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_location_detail, container, false);
 
         mUnbinder = ButterKnife.bind(this, rootView);
 
@@ -123,8 +143,6 @@ public class LocationDetailsFragment extends Fragment {
         appBarLayout.setVisibility(View.GONE);
         detailsLinearLayoutContainer.setVisibility(View.GONE);
         fabButton.setVisibility(View.GONE);
-
-
 
 
         return rootView;
@@ -137,6 +155,8 @@ public class LocationDetailsFragment extends Fragment {
 
         TAG = getActivity().getClass().getSimpleName();
 
+        getActivity().getWindow().setStatusBarColor(Color.TRANSPARENT);
+
         mSelectedPlaceId = Objects.requireNonNull(getActivity()).getIntent().getStringExtra(Constants.SELECTED_PLACE_ID_KEY);
         mSelectedPlaceName = Objects.requireNonNull(getActivity()).getIntent().getStringExtra(Constants.SELECTED_PLACE_NAME_KEY);
 
@@ -147,7 +167,10 @@ public class LocationDetailsFragment extends Fragment {
         // Set the Toolbar as Action Bar
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
 
+        // Toolbar shouldn't display title as this is shown in textView in layout
         Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setTitle("");
+
+        // enable up navigation
         Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         // Set the padding to match the Status Bar height (to avoid title being cut off by
@@ -155,15 +178,21 @@ public class LocationDetailsFragment extends Fragment {
         mToolbar.setPadding(0, 25, 0, 0);
 
 
-        if (mSelectedPlaceId != null){
-            if (Config.hasNetworkConnection(Objects.requireNonNull(getContext()))){
-                 getPlaceDetailsFromApi(mSelectedPlaceId);
+        if (mSelectedPlaceId != null) {
+            if (Config.hasNetworkConnection(Objects.requireNonNull(getContext()))) {
+                getPlaceDetailsFromApi(mSelectedPlaceId);
+
+                mDb = PlacesDatabase.getInstance(getContext());
+
+                factory = new AddPlaceViewModelFactory(mDb, mSelectedPlaceId);
+                viewModel = ViewModelProviders.of(this, factory).get(AddPlaceViewModel.class);
             }
         }
 
+
     }
 
-    public void getPlaceDetailsFromApi(String placeId){
+    public void getPlaceDetailsFromApi(String placeId) {
 
         // replace the ":" in the placeId String with encoded url value due to bug #3080 in Retrofit which
         // is not encoding this symbol automatically
@@ -182,7 +211,7 @@ public class LocationDetailsFragment extends Fragment {
 
                 Log.v("response_log", "Response received from api call");
 
-                if (response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     selectedPlace = response.body().data.place;
 
                     appBarLayout.setVisibility(View.VISIBLE);
@@ -191,72 +220,86 @@ public class LocationDetailsFragment extends Fragment {
                     loadingProgressBar.setVisibility(View.GONE);
                     noContentToDisplayView.setVisibility(View.GONE);
 
-                    if (selectedPlace.name != null && !selectedPlace.name.isEmpty()){
+                    if (selectedPlace.name != null && !selectedPlace.name.isEmpty()) {
                         locationTitleTv.setText(selectedPlace.name);
                     }
 
-                    if (selectedPlace.nameSuffix != null && !selectedPlace.nameSuffix.isEmpty()){
+                    if (selectedPlace.nameSuffix != null && !selectedPlace.nameSuffix.isEmpty()) {
                         locationSubtitleTv.setText(selectedPlace.nameSuffix);
                     }
+                    // check that description object is not Null before referencing its fields
+                    if (selectedPlace.description != null){
+                        if (selectedPlace.description.longDescription != null
+                                && !selectedPlace.description.longDescription.isEmpty()) {
+                            expandableTextView.setText(selectedPlace.description.longDescription);
+                        } else {
+                            expandableTextView.setVisibility(View.GONE);
+                            buttonToggle.setVisibility(View.GONE);
+                        }
 
-                    if (selectedPlace.description.longDescription != null
-                            && !selectedPlace.description.longDescription.isEmpty()) {
-                        expandableTextView.setText(selectedPlace.description.longDescription);
+                        if (selectedPlace.description.wikiUrl != null
+                                && !selectedPlace.description.wikiUrl.isEmpty()) {
+                            wikipediaLinkTv.setVisibility(View.VISIBLE);
+                            setUpWikipediaIntent(selectedPlace.description.wikiUrl);
+                        } else {
+                            wikipediaLinkTv.setVisibility(View.GONE);
+                        }
                     }
+
 
                     // configure behaviour of expandable text view toggle button
                     setUpToggleButton();
 
                     // get photo of location from array of Media objects to display in imageView
                     imageUrlToDisplay = null;
+                    if (selectedPlace.mainMedia != null){
+                        if (selectedPlace.mainMedia.media != null && !selectedPlace.mainMedia.media.isEmpty()) {
 
-                    if (selectedPlace.mainMedia.media != null && !selectedPlace.mainMedia.media.isEmpty()){
+                            List<Media> mediaList = selectedPlace.mainMedia.media;
 
-                        List<Media> mediaList = selectedPlace.mainMedia.media;
-
-                        for (int i = 0; i < mediaList.size(); i++){
-                            if (mediaList.get(i).type.contentEquals("photo")){
-                                imageUrlToDisplay = mediaList.get(i).mediaUrl;
-                                break;
+                            for (int i = 0; i < mediaList.size(); i++) {
+                                if (mediaList.get(i).type.contentEquals("photo")) {
+                                    imageUrlToDisplay = mediaList.get(i).mediaUrl;
+                                    break;
+                                }
                             }
                         }
                     }
 
+
                     setUpImageView(imageUrlToDisplay);
 
-                    if (selectedPlace.phoneNumber != null && !selectedPlace.phoneNumber.isEmpty()){
+                    if (selectedPlace.phoneNumber != null && !selectedPlace.phoneNumber.isEmpty()) {
                         locationPhoneNumberTv.setText(selectedPlace.phoneNumber);
                     } else {
                         locationPhoneNumberTv.setVisibility(View.GONE);
                     }
 
 
-                    if (selectedPlace.address != null && !selectedPlace.address.isEmpty()){
+                    if (selectedPlace.address != null && !selectedPlace.address.isEmpty()) {
                         locationAddressTv.setText(selectedPlace.address);
                     } else {
                         locationAddressTv.setVisibility(View.GONE);
                     }
 
-                    if (selectedPlace.email != null && !selectedPlace.email.isEmpty()){
+                    if (selectedPlace.email != null && !selectedPlace.email.isEmpty()) {
                         locationEmailAddressTv.setText(selectedPlace.email);
                     } else {
                         locationEmailAddressTv.setVisibility(View.GONE);
                     }
 
-                    if (selectedPlace.description.wikiUrl != null
-                            && !selectedPlace.description.wikiUrl.isEmpty()){
-                        wikipediaLinkTv.setVisibility(View.VISIBLE);
-                        setUpWikipediaIntent(selectedPlace.description.wikiUrl);
-                    } else {
-                        wikipediaLinkTv.setVisibility(View.GONE);
-                    }
 
-                    if (selectedPlace.admission != null && !selectedPlace.admission.isEmpty()){
+
+                    if (selectedPlace.admission != null && !selectedPlace.admission.isEmpty()) {
                         ticketInfoTv.setText(selectedPlace.admission);
+                    } else {
+                        ticketInfoTv.setVisibility(View.GONE);
                     }
 
-                    if (selectedPlace.openingHours != null && !selectedPlace.openingHours.isEmpty()){
+                    if (selectedPlace.openingHours != null && !selectedPlace.openingHours.isEmpty()) {
                         openingHoursTv.setText(selectedPlace.openingHours);
+                    } else {
+                        openingHoursTv.setVisibility(View.GONE);
                     }
 
                 } else {
@@ -279,14 +322,14 @@ public class LocationDetailsFragment extends Fragment {
 
     }
 
-    private void setUpImageView(String imageUrlToDisplay){
+    private void setUpImageView(String imageUrlToDisplay) {
 
         // display high res picture for this location. If no image is available
         // display placeholder image instead
 
         RequestOptions requestOptions = new RequestOptions().centerCrop();
 
-        if (imageUrlToDisplay != null){
+        if (imageUrlToDisplay != null) {
 
             Glide.with(Objects.requireNonNull(getContext()))
                     .load(imageUrlToDisplay)
@@ -300,7 +343,7 @@ public class LocationDetailsFragment extends Fragment {
         }
     }
 
-    private void setUpToggleButton(){
+    private void setUpToggleButton() {
 
         expandableTextView.setInterpolator(new OvershootInterpolator());
 
@@ -322,22 +365,102 @@ public class LocationDetailsFragment extends Fragment {
         });
     }
 
-    private void setUpWikipediaIntent(String wikipediaUrl){
+    private void setUpWikipediaIntent(String wikipediaUrl) {
         wikipediaLinkTv.setOnClickListener(v -> {
-            Intent wikipediaIntent= new Intent(Intent.ACTION_VIEW, Uri.parse(wikipediaUrl));
+            Intent wikipediaIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(wikipediaUrl));
             startActivity(wikipediaIntent);
         });
     }
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.favorites:
+                onFavoriteIconClicked(item);
+                break;
 
+        }
+        return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.place_details_fragment_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
 
     @Override
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
+
         super.onPrepareOptionsMenu(menu);
+
+        final MenuItem favoritesIcon = menu.getItem(1);
+
+        viewModel.getPlace().observe(this, new Observer<Place>() {
+            @Override
+            public void onChanged(@Nullable Place place) {
+
+
+
+                // if selected place currently exists in the favorites database when user navigates to
+                // to the details screen, display the full favorites icon
+                if (place != null) {
+                    Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                            .getDrawable(R.drawable.ic_favorite);
+                    assert selectedAsFavoriteIcon != null;
+                    selectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                    favoritesIcon.setIcon(selectedAsFavoriteIcon);
+                    viewModel.getPlace().removeObserver(this);
+                } else {
+                    Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                            .getDrawable(R.drawable.ic_favorite_border);
+                    assert notSelectedAsFavoriteIcon != null;
+                    notSelectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                    favoritesIcon.setIcon(notSelectedAsFavoriteIcon);
+                    viewModel.getPlace().removeObserver(this);
+                }
+            }
+        });
+    }
+
+
+    private void onFavoriteIconClicked(final MenuItem item) {
+
+        viewModel.getPlace().observe(this, new Observer<Place>() {
+            @Override
+            public void onChanged(@Nullable Place place) {
+
+
+
+                // if Place user is currently viewing does not exist in the database when click on favorite icon occurs,
+                // remove it from database and handle UI changes accordingly. If it does exist, delete it and reflect that
+                // by showing empty icon
+                if (place == null) {
+                    viewModel.insertPlace(mDb, selectedPlace);
+                    viewModel.getPlace().removeObserver(this);
+                    // UI changes to show full favorites icon once Place has been added to favorites
+                    Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                            .getDrawable(R.drawable.ic_favorite);
+                    assert selectedAsFavoriteIcon != null;
+                    selectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                    item.setIcon(selectedAsFavoriteIcon);
+                } else {
+                    viewModel.deletePlace(mDb, selectedPlace);
+                    viewModel.getPlace().removeObserver(this);
+                    // UI changes to show empty favorites icon now that user has removed it from database
+                    Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                            .getDrawable(R.drawable.ic_favorite_border);
+                    assert notSelectedAsFavoriteIcon != null;
+                    notSelectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                    item.setIcon(notSelectedAsFavoriteIcon);
+                }
+
+
+            }
+        });
+
     }
 
     @Override

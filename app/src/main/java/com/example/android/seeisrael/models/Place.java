@@ -3,11 +3,24 @@ package com.example.android.seeisrael.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "favorite_places" )
 public class Place implements Parcelable {
+
+
+    @PrimaryKey (autoGenerate = true)
+    @Expose(serialize = false, deserialize = false)
+    public int uniqueDatabaseId;
 
     @SerializedName("id")
     public String id;
@@ -27,6 +40,7 @@ public class Place implements Parcelable {
     @SerializedName("location")
     public Location location;
 
+    @ColumnInfo(name = "name_suffix")
     @SerializedName("name_suffix")
     public String nameSuffix;
 
@@ -39,9 +53,11 @@ public class Place implements Parcelable {
     @SerializedName("email")
     public String email;
 
+    @ColumnInfo(name = "opening_hours")
     @SerializedName("opening_hours")
     public String openingHours;
 
+    @ColumnInfo(name = "phone_number")
     @SerializedName("phone")
     public String phoneNumber;
 
@@ -51,7 +67,28 @@ public class Place implements Parcelable {
     @SerializedName("main_media")
     public MainMedia mainMedia;
 
+    public Place(int uniqueDatabaseId, String id, String name, List<String> categories,
+                 String summary, String thumbnail_url, Location location, String nameSuffix,
+                 String address, String admission, String email, String openingHours,
+                 String phoneNumber, Description description, MainMedia mainMedia) {
+        this.uniqueDatabaseId = uniqueDatabaseId;
+        this.id = id;
+        this.name = name;
+        this.categories = categories;
+        this.summary = summary;
+        this.thumbnail_url = thumbnail_url;
+        this.location = location;
+        this.nameSuffix = nameSuffix;
+        this.address = address;
+        this.admission = admission;
+        this.email = email;
+        this.openingHours = openingHours;
+        this.phoneNumber = phoneNumber;
+        this.description = description;
+        this.mainMedia = mainMedia;
+    }
 
+    @Ignore
     public Place() {}
 
     @Override
@@ -94,7 +131,7 @@ public class Place implements Parcelable {
         this.mainMedia = in.readParcelable(MainMedia.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<Place> CREATOR = new Parcelable.Creator<Place>() {
+    public static final Creator<Place> CREATOR = new Creator<Place>() {
         @Override
         public Place createFromParcel(Parcel source) {
             return new Place(source);

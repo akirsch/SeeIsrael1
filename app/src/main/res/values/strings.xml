@@ -68,5 +68,6 @@
 
     <string name="content_cant_be_displayed">Sorry, the content you requested cnt be diplayed right now, /nplease try again later. </string>
 
+    <string name="favorite_places">Favorite Places</string>
 
 </resources>
