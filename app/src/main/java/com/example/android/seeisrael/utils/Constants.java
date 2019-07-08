@@ -9,6 +9,8 @@ public class Constants {
 
     public static final String SYGIC_PLACES_API_KEY_HEADER = "9eIxv66avt4VsSIfSogGf51WCJs1Y28I8kQRj25T";
 
+    public static final String GOOGLE_MAPS_API_KEY = "AIzaSyB6uMWI3G1Ui0uEMAf7oTNuiPkryPd-txQ";
+
     public static final String SELECTED_PLACES_KEY = "selected_place";
 
     public static final String SELECTED_CATEGORY_KEY = "selected_category";
@@ -16,6 +18,8 @@ public class Constants {
     public static final String SELECTED_PLACE_ID_KEY = "selected_place_id";
 
     public static final String SELECTED_PLACE_NAME_KEY = "selected_place_name";
+
+    public static final String SELECTED_PLACE_COORINATES_KEY = "place_coordinates";
 
 
 }

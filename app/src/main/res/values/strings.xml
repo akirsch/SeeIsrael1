@@ -70,4 +70,8 @@
 
     <string name="favorite_places">Favorite Places</string>
 
+    <!-- Strings for Map Activity-->
+    <string name="location_marker">marker for selected location</string>
+    <string name="no_maps_toast">Sorry, there was a problem displaying the map</string>
+
 </resources>

@@ -5,20 +5,34 @@ import android.util.Log;
 
 import com.example.android.seeisrael.database.PlacesDatabase;
 import com.example.android.seeisrael.models.Place;
+import com.example.android.seeisrael.utils.AppExecutors;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 public class AddPlaceViewModel extends ViewModel {
 
     private final String TAG = AddPlaceViewModel.class.getSimpleName();
-    private LiveData<Place> place;
+    private Place place;
+    private PlacesDatabase mDatabase;
+    String mPlaceId;
 
     public AddPlaceViewModel(PlacesDatabase database, String placeId) {
-        place = database.favoritePlacesDao().loadPlaceById(placeId);
+        mDatabase = database;
+        mPlaceId = placeId;
     }
 
-    public LiveData<Place> getPlace() {
+    public Place getPlace() {
+        return place;
+    }
+
+    public Place queryDatabaseById(){
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                place = mDatabase.favoritePlacesDao().loadPlaceById(mPlaceId);
+            }
+        });
+
         return place;
     }
 

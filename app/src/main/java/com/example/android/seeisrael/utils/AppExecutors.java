@@ -16,7 +16,7 @@ public class AppExecutors {
 
     }
 
-    static AppExecutors getInstance() {
+    public static AppExecutors getInstance() {
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new AppExecutors(Executors.newSingleThreadExecutor());
@@ -25,7 +25,7 @@ public class AppExecutors {
         return sInstance;
     }
 
-    Executor diskIO() {
+    public Executor diskIO() {
         return diskIO;
     }
 }

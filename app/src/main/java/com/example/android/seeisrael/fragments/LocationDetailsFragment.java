@@ -1,10 +1,13 @@
 package com.example.android.seeisrael.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Movie;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,6 +15,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -22,16 +27,20 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.android.seeisrael.R;
+import com.example.android.seeisrael.activities.FavoritesActivity;
+import com.example.android.seeisrael.activities.MapsActivity;
 import com.example.android.seeisrael.database.PlacesDatabase;
 import com.example.android.seeisrael.interfaces.SygicPlacesApiService;
 import com.example.android.seeisrael.models.Media;
 import com.example.android.seeisrael.models.Place;
 import com.example.android.seeisrael.models.PlaceDetailsMainBodyResponse;
 import com.example.android.seeisrael.networking.RetrofitClientInstance;
+import com.example.android.seeisrael.utils.AppExecutors;
 import com.example.android.seeisrael.utils.Config;
 import com.example.android.seeisrael.utils.Constants;
 import com.example.android.seeisrael.viewmodels.AddPlaceViewModel;
 import com.example.android.seeisrael.viewmodels.AddPlaceViewModelFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -155,6 +164,10 @@ public class LocationDetailsFragment extends Fragment {
 
         TAG = getActivity().getClass().getSimpleName();
 
+        getActivity().getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
         getActivity().getWindow().setStatusBarColor(Color.TRANSPARENT);
 
         mSelectedPlaceId = Objects.requireNonNull(getActivity()).getIntent().getStringExtra(Constants.SELECTED_PLACE_ID_KEY);
@@ -177,6 +190,34 @@ public class LocationDetailsFragment extends Fragment {
         // transparent toolbar
         mToolbar.setPadding(0, 25, 0, 0);
 
+        locationAddressTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (selectedPlace.location != null){
+
+                    Intent mapIntent = new Intent(getContext(), MapsActivity.class);
+
+                    // create new LatLng object to store locations co-ordinates
+                    LatLng locationCoordinates =
+                            new LatLng(selectedPlace.location.latitude,
+                                    selectedPlace.location.longitude);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable(Constants.SELECTED_PLACE_COORINATES_KEY, locationCoordinates);
+                    if (selectedPlace.name != null && !selectedPlace.name.isEmpty()){
+                        bundle.putString(Constants.SELECTED_PLACE_NAME_KEY, selectedPlace.name);
+                    }
+                    // add this data to intent to send to the maps activity
+                    mapIntent.putExtras(bundle);
+
+                    startActivity(mapIntent);
+
+                }
+
+            }
+        });
+
 
         if (mSelectedPlaceId != null) {
             if (Config.hasNetworkConnection(Objects.requireNonNull(getContext()))) {
@@ -184,8 +225,7 @@ public class LocationDetailsFragment extends Fragment {
 
                 mDb = PlacesDatabase.getInstance(getContext());
 
-                factory = new AddPlaceViewModelFactory(mDb, mSelectedPlaceId);
-                viewModel = ViewModelProviders.of(this, factory).get(AddPlaceViewModel.class);
+
             }
         }
 
@@ -228,7 +268,7 @@ public class LocationDetailsFragment extends Fragment {
                         locationSubtitleTv.setText(selectedPlace.nameSuffix);
                     }
                     // check that description object is not Null before referencing its fields
-                    if (selectedPlace.description != null){
+                    if (selectedPlace.description != null) {
                         if (selectedPlace.description.longDescription != null
                                 && !selectedPlace.description.longDescription.isEmpty()) {
                             expandableTextView.setText(selectedPlace.description.longDescription);
@@ -252,7 +292,7 @@ public class LocationDetailsFragment extends Fragment {
 
                     // get photo of location from array of Media objects to display in imageView
                     imageUrlToDisplay = null;
-                    if (selectedPlace.mainMedia != null){
+                    if (selectedPlace.mainMedia != null) {
                         if (selectedPlace.mainMedia.media != null && !selectedPlace.mainMedia.media.isEmpty()) {
 
                             List<Media> mediaList = selectedPlace.mainMedia.media;
@@ -287,7 +327,6 @@ public class LocationDetailsFragment extends Fragment {
                     } else {
                         locationEmailAddressTv.setVisibility(View.GONE);
                     }
-
 
 
                     if (selectedPlace.admission != null && !selectedPlace.admission.isEmpty()) {
@@ -378,6 +417,16 @@ public class LocationDetailsFragment extends Fragment {
             case R.id.favorites:
                 onFavoriteIconClicked(item);
                 break;
+            case R.id.action_go_to_favorites:
+
+                Context context = getContext();
+
+                Intent favoritesActivityIntent = new Intent(context, FavoritesActivity.class);
+
+                if (favoritesActivityIntent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(favoritesActivityIntent);
+                }
+                break;
 
         }
         return super.onOptionsItemSelected(item);
@@ -386,8 +435,10 @@ public class LocationDetailsFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.place_details_fragment_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.place_details_fragment_menu, menu);
+        menu.getItem(0).setTitle(getString(R.string.favorite_places));
+
     }
 
 
@@ -396,68 +447,83 @@ public class LocationDetailsFragment extends Fragment {
 
         super.onPrepareOptionsMenu(menu);
 
-        final MenuItem favoritesIcon = menu.getItem(1);
-
-        viewModel.getPlace().observe(this, new Observer<Place>() {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
-            public void onChanged(@Nullable Place place) {
+            public void run() {
 
+                final MenuItem favoritesIcon = menu.getItem(1);
+                Place place = mDb.favoritePlacesDao().loadPlaceById(mSelectedPlaceId);
 
-
-                // if selected place currently exists in the favorites database when user navigates to
-                // to the details screen, display the full favorites icon
-                if (place != null) {
-                    Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
-                            .getDrawable(R.drawable.ic_favorite);
-                    assert selectedAsFavoriteIcon != null;
-                    selectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                    favoritesIcon.setIcon(selectedAsFavoriteIcon);
-                    viewModel.getPlace().removeObserver(this);
+                if (place == null) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                                    .getDrawable(R.drawable.ic_favorite_border);
+                            assert notSelectedAsFavoriteIcon != null;
+                            notSelectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                            favoritesIcon.setIcon(notSelectedAsFavoriteIcon);
+                        }
+                    });
                 } else {
-                    Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
-                            .getDrawable(R.drawable.ic_favorite_border);
-                    assert notSelectedAsFavoriteIcon != null;
-                    notSelectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                    favoritesIcon.setIcon(notSelectedAsFavoriteIcon);
-                    viewModel.getPlace().removeObserver(this);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                                    .getDrawable(R.drawable.ic_favorite);
+                            assert selectedAsFavoriteIcon != null;
+                            selectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                            favoritesIcon.setIcon(selectedAsFavoriteIcon);
+                        }
+                    });
+
                 }
             }
         });
-    }
 
+    }
 
     private void onFavoriteIconClicked(final MenuItem item) {
 
-        viewModel.getPlace().observe(this, new Observer<Place>() {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
-            public void onChanged(@Nullable Place place) {
+            public void run() {
 
+                final Place place = mDb.favoritePlacesDao().loadPlaceById(mSelectedPlaceId);
 
-
-                // if Place user is currently viewing does not exist in the database when click on favorite icon occurs,
-                // remove it from database and handle UI changes accordingly. If it does exist, delete it and reflect that
-                // by showing empty icon
                 if (place == null) {
-                    viewModel.insertPlace(mDb, selectedPlace);
-                    viewModel.getPlace().removeObserver(this);
-                    // UI changes to show full favorites icon once Place has been added to favorites
-                    Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
-                            .getDrawable(R.drawable.ic_favorite);
-                    assert selectedAsFavoriteIcon != null;
-                    selectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                    item.setIcon(selectedAsFavoriteIcon);
+
+                    mDb.favoritePlacesDao().insertPlace(selectedPlace);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // UI changes to show full favorites icon once Place has been added to favorites
+                            Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                                    .getDrawable(R.drawable.ic_favorite);
+                            assert selectedAsFavoriteIcon != null;
+                            selectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                            item.setIcon(selectedAsFavoriteIcon);
+                        }
+                    });
                 } else {
-                    viewModel.deletePlace(mDb, selectedPlace);
-                    viewModel.getPlace().removeObserver(this);
-                    // UI changes to show empty favorites icon now that user has removed it from database
-                    Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
-                            .getDrawable(R.drawable.ic_favorite_border);
-                    assert notSelectedAsFavoriteIcon != null;
-                    notSelectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                    item.setIcon(notSelectedAsFavoriteIcon);
+                    // If movie was previously listed a favorite,
+                    // when favorites button is clicked remove this movie from the favorite movie database
+                    mDb.favoritePlacesDao().deletePlace(place);
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // UI changes to show empty favorites icon now that user has removed it from database
+                            Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                                    .getDrawable(R.drawable.ic_favorite_border);
+                            assert notSelectedAsFavoriteIcon != null;
+                            notSelectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                            item.setIcon(notSelectedAsFavoriteIcon);
+                        }
+                    });
+
                 }
-
-
             }
         });
 

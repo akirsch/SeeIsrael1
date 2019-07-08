@@ -7,12 +7,13 @@
     <item
         android:id="@+id/action_go_to_favorites"
         android:title="@string/favorite_places"
-        app:iconTint="@android:color/white"/>
+        app:showAsAction="withText"
+        app:itemTextColor="@color/colorPrimaryText"/>
 
     <item
         android:id="@+id/favorites"
         app:showAsAction="always"
-        app:iconTint="@android:color/white"
         android:title="@string/favorites_icon"
+        app:iconTint="@android:color/white"
         android:icon="@drawable/ic_favorite_border" />
 </menu>

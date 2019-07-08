@@ -29,7 +29,7 @@ public interface FavoritePlacesDao {
     void deletePlace(Place place);
 
     @Query("SELECT * FROM favorite_places WHERE id = :id")
-    LiveData<Place> loadPlaceById (String id);
+    Place loadPlaceById (String id);
 
 
 }
