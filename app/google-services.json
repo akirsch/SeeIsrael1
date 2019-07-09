@@ -1,0 +1,41 @@
+{
+  "project_info": {
+    "project_number": "530224151970",
+    "firebase_url": "https://seeisrael-14f63.firebaseio.com",
+    "project_id": "seeisrael-14f63",
+    "storage_bucket": "seeisrael-14f63.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530224151970:android:e2211e59a05ccf97",
+        "android_client_info": {
+          "package_name": "com.example.android.seeisrael"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "530224151970-njc2tcm3b555nk4puv7u1656hnfumchc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCilC8ryCGN0MbpOjymm4y5LSJpUiwnj4Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "530224151970-njc2tcm3b555nk4puv7u1656hnfumchc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-7165379289488242~4455409354"
+    }
+  ],
+  "configuration_version": "1"
+}

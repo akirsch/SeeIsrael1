@@ -9,6 +9,8 @@
 
     <string name="location_image_content_description">This is an image of the chosen location</string>
 
+    <string name="thumbnail_content_description">This is a thumbnail image of this location</string>
+
     <string name="dummy_string">Despite fears that Moscow may seek to influence the 2020 elections by launching cyber attacks, social media disinformation, covert agent operations and other “active measures” as it did in the 2016 election, adequate funding and White House focus to counter any new Russian meddling are lagging, experts and officials say.</string>
 
     <string name="see_more">See More</string>
@@ -73,5 +75,7 @@
     <!-- Strings for Map Activity-->
     <string name="location_marker">marker for selected location</string>
     <string name="no_maps_toast">Sorry, there was a problem displaying the map</string>
+
+    <string name="adMob_app_id">ca-app-pub-7165379289488242~4455409354</string>
 
 </resources>

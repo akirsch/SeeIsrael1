@@ -9,6 +9,8 @@ import com.example.android.seeisrael.R;
 import com.example.android.seeisrael.adapters.LocationCategoryFragmentPagerAdapter;
 import com.example.android.seeisrael.models.Places;
 import com.example.android.seeisrael.utils.Constants;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -47,6 +49,9 @@ public class LocationsCategoriesListsFragment extends Fragment {
     ViewPager mViewPager;
 
 
+    private AdView mAdView;
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +80,7 @@ public class LocationsCategoriesListsFragment extends Fragment {
         chosenPlace = Objects.requireNonNull(getActivity()).getIntent().getParcelableExtra(Constants.SELECTED_PLACES_KEY);
 
         mToolbar = getActivity().findViewById(R.id.toolbar);
+        mAdView = getActivity().findViewById(R.id.adView);
 
 
         // Set the Toolbar as Action Bar
@@ -121,6 +127,12 @@ public class LocationsCategoriesListsFragment extends Fragment {
                 getChildFragmentManager(), BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT, pages);
 
         mViewPager.setAdapter(mLocationCategoryFragmentPagerAdapter);
+
+        // load test add into AdView
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("3EB28E624CAD65EA74E3971763255324")
+                .build();
+        mAdView.loadAd(adRequest);
 
 
     }

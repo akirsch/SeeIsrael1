@@ -8,6 +8,7 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/thumbnail_image"
+        android:contentDescription="@string/thumbnail_content_description"
         android:layout_width="@dimen/avatar_diameter"
         android:layout_height="@dimen/avatar_diameter"
         android:layout_marginStart="16dp"

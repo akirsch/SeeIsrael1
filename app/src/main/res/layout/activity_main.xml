@@ -35,4 +35,6 @@
         android:name="com.example.android.seeisrael.fragments.CityListFragment"
         tools:layout="@layout/fragment_town_list" />
 
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

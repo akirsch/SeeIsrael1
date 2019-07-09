@@ -77,11 +77,17 @@ dependencies {
     annotationProcessor 'androidx.room:room-compiler:2.1.0'
 
     // Include dependencies for Live Data and View Model
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha01'
-    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.2.0-alpha01'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-alpha02'
+    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.2.0-alpha02'
 
     // include library for an expandable text view
     implementation 'at.blogc:expandabletextview:1.0.5'
 
+    //Firebase dependencies
+    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'com.google.firebase:firebase-ads:18.0.0'
+
 
 }
+
+apply plugin: 'com.google.gms.google-services'
