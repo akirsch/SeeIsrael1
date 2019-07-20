@@ -68,7 +68,7 @@
 
     <string name="title_activity_maps">Map</string>
 
-    <string name="content_cant_be_displayed">Sorry, the content you requested cnt be diplayed right now, /nplease try again later. </string>
+    <string name="content_cant_be_displayed">Sorry, the content you requested cnt be displayed right now, /nplease try again later. </string>
 
     <string name="favorite_places">Favorite Places</string>
 
@@ -77,5 +77,36 @@
     <string name="no_maps_toast">Sorry, there was a problem displaying the map</string>
 
     <string name="adMob_app_id">ca-app-pub-7165379289488242~4455409354</string>
+
+    <string name="activity_exchange_rates_title">Popular Exchange Rates</string>
+
+    <string name="exchange_rates">Exchange Rates</string>
+
+    <string name="hamburger_menu">Menu</string>
+
+    <!-- Strings for SharedPreferences to store currency rate-->
+    <string name="shared_preferences_file_key">com.example.android.seeisrael.currency-preferences</string>
+
+    <string name="us_dollar_rate_key">US Dollar Rate</string>
+
+    <string name="gbp_rate_key">Pounds Rate</string>
+
+    <string name="ruble_rate_key">Ruble Rate</string>
+
+    <string name="euro_rate_key">Euro Rate</string>
+
+    <string name="canadian_dollar_rate_key">CA Dollar Rate</string>
+
+    <string name="rand_rate_key">Rand Rate</string>
+
+    <string name="currency_api_has_been_called_key">currency boolean</string>
+
+    <string name="exchange_rate_api_error_message">Sorry, there was a problem getting the exchange rate data</string>
+
+    <string name="default_value_string">Default Value</string>
+
+    <string name="date_of_exchange_rates">These rates are accurate to: </string>
+
+    <string name="unique_work_request_id">get currency data work request</string>
 
 </resources>

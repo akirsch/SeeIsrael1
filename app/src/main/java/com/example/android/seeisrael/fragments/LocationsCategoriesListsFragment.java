@@ -1,16 +1,24 @@
 package com.example.android.seeisrael.fragments;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.android.seeisrael.R;
+import com.example.android.seeisrael.activities.ExchangeRatesActivity;
+import com.example.android.seeisrael.activities.FavoritesActivity;
 import com.example.android.seeisrael.adapters.LocationCategoryFragmentPagerAdapter;
 import com.example.android.seeisrael.models.Places;
 import com.example.android.seeisrael.utils.Constants;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -56,7 +64,6 @@ public class LocationsCategoriesListsFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
     }
 
     @Nullable
@@ -75,6 +82,7 @@ public class LocationsCategoriesListsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
 
         // get chosen town from the parent Activity of this Fragment
         chosenPlace = Objects.requireNonNull(getActivity()).getIntent().getParcelableExtra(Constants.SELECTED_PLACES_KEY);
@@ -129,11 +137,10 @@ public class LocationsCategoriesListsFragment extends Fragment {
         mViewPager.setAdapter(mLocationCategoryFragmentPagerAdapter);
 
         // load test add into AdView
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice("3EB28E624CAD65EA74E3971763255324")
-                .build();
+        AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 
+        // .addTestDevice("3EB28E624CAD65EA74E3971763255324")
 
     }
 
@@ -150,6 +157,47 @@ public class LocationsCategoriesListsFragment extends Fragment {
     public void moveBackOnePage() {
         mViewPager.setCurrentItem(mViewPager.getCurrentItem() - 1);
     }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.category_selection_fragment_menu, menu);
+        menu.getItem(0).setTitle(getString(R.string.favorite_places));
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        Context context = getContext();
+
+        switch (item.getItemId()) {
+
+            case R.id.action_go_to_favorites:
+
+                Intent favoritesActivityIntent = new Intent(context, FavoritesActivity.class);
+
+                if (favoritesActivityIntent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(favoritesActivityIntent);
+                }
+                break;
+            case R.id.action_go_to_exchange_rates:
+
+                Intent exchangeRatesActivityIntent = new Intent(context, ExchangeRatesActivity.class);
+
+                if (exchangeRatesActivityIntent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(exchangeRatesActivityIntent);
+                }
+                break;
+
+
+
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 
 
 }

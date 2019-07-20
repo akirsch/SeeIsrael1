@@ -34,6 +34,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:fitsSystemWindows="true"
                 android:layout_alignParentTop="true"/>
 
 
@@ -110,7 +111,8 @@
                 android:text="@string/see_more"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
                 android:textColor="@color/colorPrimary"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:nextFocusForward="@id/location_phone_number_tv"/>
 
             <View
                 android:layout_width="match_parent"
@@ -145,6 +147,7 @@
                 android:fontFamily="@font/roboto"
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="@dimen/list_item_primary_text_size"
+                android:focusable="true"
                 tools:text="140 Levi Eshkol Steet" />
 
 
@@ -239,7 +242,8 @@
         app:borderWidth="0dp"
         app:layout_anchor="@id/location_image_view"
         app:layout_anchorGravity="bottom|right|end"
-        app:tint="@android:color/white" />
+        app:tint="@android:color/white"
+        android:nextFocusForward="@id/button_toggle"/>
 
     <ProgressBar
         android:id="@+id/loading_spinner"

@@ -125,5 +125,9 @@ public class FavoritesFragment extends Fragment {
         });
     }
 
-
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mUnbinder.unbind();
+    }
 }

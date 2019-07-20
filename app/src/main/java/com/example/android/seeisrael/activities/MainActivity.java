@@ -1,6 +1,11 @@
 package com.example.android.seeisrael.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -34,5 +39,30 @@ public class MainActivity extends AppCompatActivity {
         MobileAds.initialize(this, getString(R.string.adMob_app_id));
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.action_go_to_exchange_rates:
+
+                Intent exchangeRatesActivityIntent = new Intent(this, ExchangeRatesActivity.class);
+
+                if (exchangeRatesActivityIntent.resolveActivity(this.getPackageManager()) != null) {
+                    this.startActivity(exchangeRatesActivityIntent);
+                }
+                break;
+        }
+
+
+        return super.onOptionsItemSelected(item);
     }
 }

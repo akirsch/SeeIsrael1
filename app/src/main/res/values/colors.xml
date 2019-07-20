@@ -9,5 +9,6 @@
     <color name="color_icon_default">#8C000000</color>
     <color name="color_divider">#BDBDBD</color>
     <color name="activity_background_color">#F5F5F5</color>
+    <color name="discovery_placeholder_color">#FF5722</color>
 
 </resources>

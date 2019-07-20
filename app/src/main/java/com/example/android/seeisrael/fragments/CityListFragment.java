@@ -17,12 +17,15 @@ import com.example.android.seeisrael.models.Places;
 import com.example.android.seeisrael.models.TownQueryMainBodyResponse;
 import com.example.android.seeisrael.networking.RetrofitClientInstance;
 import com.example.android.seeisrael.utils.Config;
+import com.example.android.seeisrael.viewmodels.TownListFragmentViewModel;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -39,6 +42,7 @@ public class CityListFragment extends Fragment {
     private ArrayList<Places> mPlacesList;
     private TownListAdapter mTownListAdapter;
     private MainActivity mParentActivity;
+    private TownListFragmentViewModel townListFragmentViewModel;
 
     private static final int LANSCAPE_COLUMN_NUMBER = 3;
     private static final int PORTRAIT_COLUMN_NUMBER = 2;
@@ -84,9 +88,38 @@ public class CityListFragment extends Fragment {
         mTownListAdapter = new TownListAdapter();
         mRecyclerView.setAdapter(mTownListAdapter);
 
+        townListFragmentViewModel = ViewModelProviders.of(this).get(TownListFragmentViewModel.class);
+
         if (Config.hasNetworkConnection(getContext())){
 
-            getTownDataFromApi();
+            townListFragmentViewModel.initialize();
+            townListFragmentViewModel.getTownData().observe(this, new Observer<TownQueryMainBodyResponse>() {
+                @Override
+                public void onChanged(TownQueryMainBodyResponse townQueryMainBodyResponse) {
+                    if (townQueryMainBodyResponse != null){
+
+                        mPlacesList = (ArrayList<Places>) townQueryMainBodyResponse.data.places;
+                        mTownListAdapter.setTownList(mPlacesList);
+                        mTownListAdapter.notifyDataSetChanged();
+
+                        // handle UI for a successful API call
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mProgresBar.setVisibility(View.GONE);
+                        mEmptyListTextView.setVisibility(View.GONE);
+
+
+                    } else {
+                        mRecyclerView.setVisibility(View.GONE);
+                        mProgresBar.setVisibility(View.GONE);
+                        mEmptyListTextView.setVisibility(View.VISIBLE);
+                        mEmptyListTextView.setText(getString(R.string.no_towns_available));
+                    }
+
+                }
+            });
+
+
+
 
         } else {
             mRecyclerView.setVisibility(View.GONE);
@@ -96,59 +129,6 @@ public class CityListFragment extends Fragment {
         }
 
         return rootView;
-    }
-
-
-    private void getTownDataFromApi(){
-
-        SygicPlacesApiService sygicPlacesApiService = RetrofitClientInstance
-                .getRetrofitInstance(mParentActivity)
-                .create(SygicPlacesApiService.class);
-
-        final Call<TownQueryMainBodyResponse> listOfTownsCall =
-                sygicPlacesApiService.getAllTownsInIsrael();
-
-        listOfTownsCall.enqueue(new Callback<TownQueryMainBodyResponse>() {
-            @Override
-            public void onResponse(Call<TownQueryMainBodyResponse> call, Response<TownQueryMainBodyResponse> response) {
-
-                if (response.isSuccessful() && response.body() != null){
-
-                    mPlacesList = (ArrayList<Places>) response.body().data.places;
-
-                    MainActivity.sPlacesList = mPlacesList;
-
-                    // pass this list to the adapter
-                    mTownListAdapter.setTownList(mPlacesList);
-                    mTownListAdapter.notifyDataSetChanged();
-
-                    // handle UI for a successful API call
-                    mRecyclerView.setVisibility(View.VISIBLE);
-                    mProgresBar.setVisibility(View.GONE);
-                    mEmptyListTextView.setVisibility(View.GONE);
-
-                }
-                else {
-                    mRecyclerView.setVisibility(View.GONE);
-                    mProgresBar.setVisibility(View.GONE);
-                    mEmptyListTextView.setVisibility(View.VISIBLE);
-                    mEmptyListTextView.setText(getString(R.string.no_towns_available));
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<TownQueryMainBodyResponse> call, Throwable throwable) {
-
-                mRecyclerView.setVisibility(View.GONE);
-                mProgresBar.setVisibility(View.GONE);
-                mEmptyListTextView.setVisibility(View.VISIBLE);
-                mEmptyListTextView.setText(getString(R.string.no_towns_available));
-
-            }
-        });
-
-
     }
 
 

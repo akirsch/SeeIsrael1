@@ -15,12 +15,16 @@ import com.example.android.seeisrael.models.TownQueryMainBodyResponse;
 import com.example.android.seeisrael.networking.RetrofitClientInstance;
 import com.example.android.seeisrael.utils.Config;
 import com.example.android.seeisrael.utils.Constants;
+import com.example.android.seeisrael.viewmodels.CategoryLocationListViewModel;
+import com.example.android.seeisrael.viewmodels.CategoryLocationListViewModelFactory;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
@@ -40,7 +44,6 @@ public class MyViewPagerCategoryFragment extends Fragment {
     private final int API_RESULT_LIMIT = 50;
 
 
-
     @BindView(R.id.location_list_recycler_view)
     RecyclerView mLocationListRecyclerView;
 
@@ -50,7 +53,8 @@ public class MyViewPagerCategoryFragment extends Fragment {
     @BindView(R.id.empty_list_view)
     TextView mEmptyListView;
 
-    public MyViewPagerCategoryFragment() {}
+    public MyViewPagerCategoryFragment() {
+    }
 
     // method to allow parent Fragment to pass data to child fragment upon initialization
     public static MyViewPagerCategoryFragment instanceOfWithData(Places places, String searchCategory) {
@@ -68,14 +72,11 @@ public class MyViewPagerCategoryFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
 
-
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
 
 
     }
@@ -103,7 +104,6 @@ public class MyViewPagerCategoryFragment extends Fragment {
         mEmptyListView.setVisibility(View.GONE);
 
 
-
         return rootView;
     }
 
@@ -120,59 +120,45 @@ public class MyViewPagerCategoryFragment extends Fragment {
                 // get Id of selected town to use for call to API
                 String selectedPlaceId = selectedPlace.id;
 
+                CategoryLocationListViewModelFactory factory =
+                        new CategoryLocationListViewModelFactory(selectedPlaceId, selectedCategory);
+                final CategoryLocationListViewModel categoryLocationListViewModel =
+                        ViewModelProviders.of(this, factory)
+                                .get(CategoryLocationListViewModel.class);
+
                 if (Config.hasNetworkConnection(getContext())) {
-                    getCategoryRelevantDataFromApi(selectedPlaceId, selectedCategory);
+
+                    categoryLocationListViewModel.initialize();
+
+                    categoryLocationListViewModel.getListOfLocationsData()
+                            .observe(this, new Observer<TownQueryMainBodyResponse>() {
+                                @Override
+                                public void onChanged(TownQueryMainBodyResponse townQueryMainBodyResponse) {
+
+                                    if (townQueryMainBodyResponse != null) {
+                                        mDiscoveryPlacesList = (ArrayList<Places>) townQueryMainBodyResponse.data.places;
+
+                                        // pass this list to the adapter
+                                        mPlacesListAdapter.setPlacesList(mDiscoveryPlacesList);
+                                        mPlacesListAdapter.notifyDataSetChanged();
+
+                                        // handle UI for a successful API call
+                                        mLocationListRecyclerView.setVisibility(View.VISIBLE);
+                                        mProgresBar.setVisibility(View.GONE);
+                                        mEmptyListView.setVisibility(View.GONE);
+                                    } else {
+                                        mLocationListRecyclerView.setVisibility(View.GONE);
+                                        mProgresBar.setVisibility(View.GONE);
+                                        mEmptyListView.setVisibility(View.VISIBLE);
+                                        mEmptyListView.setText(R.string.placeholder_no_locations);
+                                    }
+                                }
+                            });
                 }
             }
 
         }
     }
 
-    private void getCategoryRelevantDataFromApi(String placeId, String category) {
 
-        SygicPlacesApiService sygicPlacesApiService = RetrofitClientInstance
-                .getRetrofitInstance(getContext())
-                .create(SygicPlacesApiService.class);
-
-        final Call<TownQueryMainBodyResponse> listOfPlacesInTownCall
-                = sygicPlacesApiService.getListOfPlacesByCategory(placeId, category, API_RESULT_LIMIT);
-
-
-        listOfPlacesInTownCall.enqueue(new Callback<TownQueryMainBodyResponse>() {
-            @Override
-            public void onResponse(Call<TownQueryMainBodyResponse> call, Response<TownQueryMainBodyResponse> response) {
-
-                if (response.isSuccessful() && response.body() != null){
-                    mDiscoveryPlacesList = (ArrayList<Places>) response.body().data.places;
-
-                    // pass this list to the adapter
-                    mPlacesListAdapter.setPlacesList(mDiscoveryPlacesList);
-                    mPlacesListAdapter.notifyDataSetChanged();
-
-                    // handle UI for a successful API call
-                    mLocationListRecyclerView.setVisibility(View.VISIBLE);
-                    mProgresBar.setVisibility(View.GONE);
-                    mEmptyListView.setVisibility(View.GONE);
-
-
-
-
-                } else{
-                    mLocationListRecyclerView.setVisibility(View.GONE);
-                    mProgresBar.setVisibility(View.GONE);
-                    mEmptyListView.setVisibility(View.VISIBLE);
-                    mEmptyListView.setText(R.string.placeholder_no_locations);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<TownQueryMainBodyResponse> call, Throwable throwable) {
-                    mLocationListRecyclerView.setVisibility(View.GONE);
-                    mProgresBar.setVisibility(View.GONE);
-                    mEmptyListView.setVisibility(View.VISIBLE);
-                    mEmptyListView.setText(R.string.placeholder_no_locations);
-            }
-        });
-    }
 }

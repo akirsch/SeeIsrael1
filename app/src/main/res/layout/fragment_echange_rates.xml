@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageView9"
+            android:layout_width="39dp"
+            android:layout_height="39dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView8"
+            app:layout_constraintStart_toEndOf="@+id/imageView8"
+            app:layout_constraintTop_toTopOf="@+id/caDollar_static_text"
+            app:srcCompat="@drawable/equal" />
+
+        <TextView
+            android:id="@+id/date_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Today, Tuesday 16th July 2019" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="39dp"
+            android:layout_height="39dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/usd_static_text"
+            app:layout_constraintEnd_toStartOf="@+id/usd_live_rate_view"
+            app:layout_constraintStart_toEndOf="@+id/usd_static_text"
+            app:srcCompat="@drawable/equal" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="39dp"
+            android:layout_height="39dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView"
+            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintTop_toTopOf="@+id/gbp_static_text"
+            app:srcCompat="@drawable/equal" />
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="39dp"
+            android:layout_height="39dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView5"
+            app:layout_constraintStart_toEndOf="@+id/imageView5"
+            app:layout_constraintTop_toTopOf="@+id/rub_static_text"
+            app:srcCompat="@drawable/equal" />
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="39dp"
+            android:layout_height="39dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView6"
+            app:layout_constraintStart_toEndOf="@+id/imageView6"
+            app:layout_constraintTop_toTopOf="@+id/euro_static_text"
+            app:srcCompat="@drawable/equal" />
+
+        <ImageView
+            android:id="@+id/imageView8"
+            android:layout_width="39dp"
+            android:layout_height="39dp"
+            app:layout_constraintEnd_toStartOf="@+id/imageView7"
+            app:layout_constraintStart_toEndOf="@+id/imageView7"
+            app:layout_constraintTop_toTopOf="@+id/rand_static_text"
+            app:srcCompat="@drawable/equal" />
+
+        <TextView
+            android:id="@+id/usd_static_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="84dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date_tv"
+            android:text="1 USD" />
+
+        <TextView
+            android:id="@+id/gbp_static_text"
+            android:layout_width="75dp"
+            android:layout_height="39dp"
+            android:layout_marginTop="48dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintStart_toStartOf="@+id/usd_static_text"
+            app:layout_constraintTop_toBottomOf="@+id/usd_static_text"
+            android:text="1 GBP" />
+
+        <TextView
+            android:id="@+id/rub_static_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintStart_toStartOf="@+id/gbp_static_text"
+            app:layout_constraintTop_toBottomOf="@+id/gbp_static_text"
+            android:text="1 RUB" />
+
+        <TextView
+            android:id="@+id/euro_static_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintStart_toStartOf="@+id/rub_static_text"
+            app:layout_constraintTop_toBottomOf="@+id/rub_static_text"
+            android:text="1 EUR" />
+
+        <TextView
+            android:id="@+id/rand_static_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintStart_toStartOf="@+id/euro_static_text"
+            app:layout_constraintTop_toBottomOf="@+id/euro_static_text"
+            android:text="1 ZAR" />
+
+        <TextView
+            android:id="@+id/caDollar_static_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintStart_toStartOf="@+id/rand_static_text"
+            app:layout_constraintTop_toBottomOf="@+id/rand_static_text"
+            android:text="1 CAD" />
+
+        <TextView
+            android:id="@+id/usd_live_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="48dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintBaseline_toBaselineOf="@+id/usd_static_text"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="3.55" />
+
+        <TextView
+            android:id="@+id/gbp_live_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintBaseline_toBaselineOf="@+id/gbp_static_text"
+            app:layout_constraintEnd_toEndOf="@+id/usd_live_rate_view"
+            tools:text="4.55" />
+
+        <TextView
+            android:id="@+id/ruble_live_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintBaseline_toBaselineOf="@+id/rub_static_text"
+            app:layout_constraintEnd_toEndOf="@+id/gbp_live_rate_view"
+            tools:text="7.21" />
+
+        <TextView
+            android:id="@+id/euro_live_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintEnd_toEndOf="@+id/ruble_live_rate_view"
+            app:layout_constraintTop_toBottomOf="@+id/ruble_live_rate_view"
+            tools:text="3.14" />
+
+        <TextView
+            android:id="@+id/rand_live_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintBaseline_toBaselineOf="@+id/rand_static_text"
+            app:layout_constraintEnd_toEndOf="@+id/euro_live_rate_view"
+            tools:text="1.25" />
+
+        <TextView
+            android:id="@+id/ca_dollar_live_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            app:layout_constraintEnd_toEndOf="@+id/rand_live_rate_view"
+            app:layout_constraintTop_toBottomOf="@+id/rand_live_rate_view"
+            tools:text="3.19" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

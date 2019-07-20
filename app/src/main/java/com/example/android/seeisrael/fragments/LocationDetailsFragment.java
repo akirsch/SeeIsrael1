@@ -3,11 +3,11 @@ package com.example.android.seeisrael.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Movie;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,8 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
+
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,19 +26,20 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.android.seeisrael.R;
+import com.example.android.seeisrael.activities.ExchangeRatesActivity;
 import com.example.android.seeisrael.activities.FavoritesActivity;
 import com.example.android.seeisrael.activities.MapsActivity;
 import com.example.android.seeisrael.database.PlacesDatabase;
-import com.example.android.seeisrael.interfaces.SygicPlacesApiService;
 import com.example.android.seeisrael.models.Media;
 import com.example.android.seeisrael.models.Place;
 import com.example.android.seeisrael.models.PlaceDetailsMainBodyResponse;
-import com.example.android.seeisrael.networking.RetrofitClientInstance;
 import com.example.android.seeisrael.utils.AppExecutors;
 import com.example.android.seeisrael.utils.Config;
 import com.example.android.seeisrael.utils.Constants;
 import com.example.android.seeisrael.viewmodels.AddPlaceViewModel;
 import com.example.android.seeisrael.viewmodels.AddPlaceViewModelFactory;
+import com.example.android.seeisrael.viewmodels.LocationDetailsViewModel;
+import com.example.android.seeisrael.viewmodels.LocationDetailsViewModelFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -53,16 +53,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import at.blogc.android.views.ExpandableTextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+
 
 public class LocationDetailsFragment extends Fragment {
 
@@ -190,38 +187,43 @@ public class LocationDetailsFragment extends Fragment {
         // transparent toolbar
         mToolbar.setPadding(0, 25, 0, 0);
 
-        locationAddressTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (selectedPlace.location != null){
-
-                    Intent mapIntent = new Intent(getContext(), MapsActivity.class);
-
-                    // create new LatLng object to store locations co-ordinates
-                    LatLng locationCoordinates =
-                            new LatLng(selectedPlace.location.latitude,
-                                    selectedPlace.location.longitude);
-
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable(Constants.SELECTED_PLACE_COORINATES_KEY, locationCoordinates);
-                    if (selectedPlace.name != null && !selectedPlace.name.isEmpty()){
-                        bundle.putString(Constants.SELECTED_PLACE_NAME_KEY, selectedPlace.name);
-                    }
-                    // add this data to intent to send to the maps activity
-                    mapIntent.putExtras(bundle);
-
-                    startActivity(mapIntent);
-
-                }
-
-            }
-        });
-
-
         if (mSelectedPlaceId != null) {
             if (Config.hasNetworkConnection(Objects.requireNonNull(getContext()))) {
-                getPlaceDetailsFromApi(mSelectedPlaceId);
+
+                // replace the ":" in the placeId String with encoded url value due to bug #3080 in Retrofit which
+                // is not encoding this symbol automatically
+                String encodedPlaceId = mSelectedPlaceId.replace(":", "%3A");
+
+                LocationDetailsViewModelFactory factory = new LocationDetailsViewModelFactory(encodedPlaceId);
+
+                final LocationDetailsViewModel locationDetailsViewModel =
+                        ViewModelProviders.of(this, factory)
+                                .get(LocationDetailsViewModel.class);
+
+                locationDetailsViewModel.initialize();
+                locationDetailsViewModel.getLocationDetailsData()
+                        .observe(this, new Observer<PlaceDetailsMainBodyResponse>() {
+                            @Override
+                            public void onChanged(PlaceDetailsMainBodyResponse placeDetailsMainBodyResponse) {
+
+                                if (placeDetailsMainBodyResponse != null) {
+
+                                    selectedPlace = placeDetailsMainBodyResponse.data.place;
+
+                                    setUpDetailsUI();
+
+                                } else {
+                                    appBarLayout.setVisibility(View.GONE);
+                                    detailsLinearLayoutContainer.setVisibility(View.GONE);
+                                    loadingProgressBar.setVisibility(View.GONE);
+                                    fabButton.setVisibility(View.GONE);
+                                    noContentToDisplayView.setVisibility(View.VISIBLE);
+                                }
+
+
+                            }
+                        });
+
 
                 mDb = PlacesDatabase.getInstance(getContext());
 
@@ -229,137 +231,135 @@ public class LocationDetailsFragment extends Fragment {
             }
         }
 
-
-    }
-
-    public void getPlaceDetailsFromApi(String placeId) {
-
-        // replace the ":" in the placeId String with encoded url value due to bug #3080 in Retrofit which
-        // is not encoding this symbol automatically
-        String encodedPlaceId = placeId.replace(":", "%3A");
-
-        SygicPlacesApiService sygicPlacesApiService = RetrofitClientInstance
-                .getRetrofitInstance(getContext())
-                .create(SygicPlacesApiService.class);
-
-        final Call<PlaceDetailsMainBodyResponse> placeDetailsCall
-                = sygicPlacesApiService.getPlaceDetails(encodedPlaceId);
-
-        placeDetailsCall.enqueue(new Callback<PlaceDetailsMainBodyResponse>() {
+        locationAddressTv.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onResponse(Call<PlaceDetailsMainBodyResponse> call, Response<PlaceDetailsMainBodyResponse> response) {
-
-                Log.v("response_log", "Response received from api call");
-
-                if (response.isSuccessful() && response.body() != null) {
-                    selectedPlace = response.body().data.place;
-
-                    appBarLayout.setVisibility(View.VISIBLE);
-                    detailsLinearLayoutContainer.setVisibility(View.VISIBLE);
-                    fabButton.setVisibility(View.VISIBLE);
-                    loadingProgressBar.setVisibility(View.GONE);
-                    noContentToDisplayView.setVisibility(View.GONE);
-
-                    if (selectedPlace.name != null && !selectedPlace.name.isEmpty()) {
-                        locationTitleTv.setText(selectedPlace.name);
-                    }
-
-                    if (selectedPlace.nameSuffix != null && !selectedPlace.nameSuffix.isEmpty()) {
-                        locationSubtitleTv.setText(selectedPlace.nameSuffix);
-                    }
-                    // check that description object is not Null before referencing its fields
-                    if (selectedPlace.description != null) {
-                        if (selectedPlace.description.longDescription != null
-                                && !selectedPlace.description.longDescription.isEmpty()) {
-                            expandableTextView.setText(selectedPlace.description.longDescription);
-                        } else {
-                            expandableTextView.setVisibility(View.GONE);
-                            buttonToggle.setVisibility(View.GONE);
-                        }
-
-                        if (selectedPlace.description.wikiUrl != null
-                                && !selectedPlace.description.wikiUrl.isEmpty()) {
-                            wikipediaLinkTv.setVisibility(View.VISIBLE);
-                            setUpWikipediaIntent(selectedPlace.description.wikiUrl);
-                        } else {
-                            wikipediaLinkTv.setVisibility(View.GONE);
-                        }
-                    }
-
-
-                    // configure behaviour of expandable text view toggle button
-                    setUpToggleButton();
-
-                    // get photo of location from array of Media objects to display in imageView
-                    imageUrlToDisplay = null;
-                    if (selectedPlace.mainMedia != null) {
-                        if (selectedPlace.mainMedia.media != null && !selectedPlace.mainMedia.media.isEmpty()) {
-
-                            List<Media> mediaList = selectedPlace.mainMedia.media;
-
-                            for (int i = 0; i < mediaList.size(); i++) {
-                                if (mediaList.get(i).type.contentEquals("photo")) {
-                                    imageUrlToDisplay = mediaList.get(i).mediaUrl;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-
-                    setUpImageView(imageUrlToDisplay);
-
-                    if (selectedPlace.phoneNumber != null && !selectedPlace.phoneNumber.isEmpty()) {
-                        locationPhoneNumberTv.setText(selectedPlace.phoneNumber);
-                    } else {
-                        locationPhoneNumberTv.setVisibility(View.GONE);
-                    }
-
-
-                    if (selectedPlace.address != null && !selectedPlace.address.isEmpty()) {
-                        locationAddressTv.setText(selectedPlace.address);
-                    } else {
-                        locationAddressTv.setVisibility(View.GONE);
-                    }
-
-                    if (selectedPlace.email != null && !selectedPlace.email.isEmpty()) {
-                        locationEmailAddressTv.setText(selectedPlace.email);
-                    } else {
-                        locationEmailAddressTv.setVisibility(View.GONE);
-                    }
-
-
-                    if (selectedPlace.admission != null && !selectedPlace.admission.isEmpty()) {
-                        ticketInfoTv.setText(selectedPlace.admission);
-                    } else {
-                        ticketInfoTv.setVisibility(View.GONE);
-                    }
-
-                    if (selectedPlace.openingHours != null && !selectedPlace.openingHours.isEmpty()) {
-                        openingHoursTv.setText(selectedPlace.openingHours);
-                    } else {
-                        openingHoursTv.setVisibility(View.GONE);
-                    }
-
-                } else {
-                    appBarLayout.setVisibility(View.GONE);
-                    detailsLinearLayoutContainer.setVisibility(View.GONE);
-                    loadingProgressBar.setVisibility(View.GONE);
-                    noContentToDisplayView.setVisibility(View.VISIBLE);
+            public void onClick(View v) {
+                // handle click on address of location by starting Map Activity with intent
+                if (selectedPlace.location != null) {
+                    onAddressClicked();
                 }
-
-            }
-
-            @Override
-            public void onFailure(Call<PlaceDetailsMainBodyResponse> call, Throwable t) {
-                appBarLayout.setVisibility(View.GONE);
-                detailsLinearLayoutContainer.setVisibility(View.GONE);
-                loadingProgressBar.setVisibility(View.GONE);
-                noContentToDisplayView.setVisibility(View.VISIBLE);
             }
         });
 
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // when user licks on fab button, start calendar app to let user add a visit
+                // to this location to their calendar
+                if (selectedPlace.name != null){
+
+                    Intent calendarIntent = new Intent(Intent.ACTION_INSERT)
+                            .setData(CalendarContract.Events.CONTENT_URI)
+                            .putExtra(CalendarContract.Events.TITLE, selectedPlace.name)
+                            .putExtra(CalendarContract.Events.DESCRIPTION, "Visit to " + selectedPlace.name);
+
+                    if (selectedPlace.address != null){
+                        calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, selectedPlace.address);
+                    }
+                    startActivity(calendarIntent);
+
+                }
+            }
+        });
+
+
     }
+
+    private void setUpDetailsUI() {
+
+        appBarLayout.setVisibility(View.VISIBLE);
+        detailsLinearLayoutContainer.setVisibility(View.VISIBLE);
+        fabButton.setVisibility(View.VISIBLE);
+        loadingProgressBar.setVisibility(View.GONE);
+        noContentToDisplayView.setVisibility(View.GONE);
+
+        if (selectedPlace.name != null && !selectedPlace.name.isEmpty()) {
+            locationTitleTv.setText(selectedPlace.name);
+        }
+
+        if (selectedPlace.nameSuffix != null && !selectedPlace.nameSuffix.isEmpty()) {
+            locationSubtitleTv.setText(selectedPlace.nameSuffix);
+        }
+        // check that description object is not Null before referencing its fields
+        if (selectedPlace.description != null) {
+            if (selectedPlace.description.longDescription != null
+                    && !selectedPlace.description.longDescription.isEmpty()) {
+                expandableTextView.setText(selectedPlace.description.longDescription);
+            } else {
+                expandableTextView.setVisibility(View.GONE);
+                buttonToggle.setVisibility(View.GONE);
+            }
+
+            if (selectedPlace.description.wikiUrl != null
+                    && !selectedPlace.description.wikiUrl.isEmpty()) {
+                wikipediaLinkTv.setVisibility(View.VISIBLE);
+                setUpWikipediaIntent(selectedPlace.description.wikiUrl);
+            } else {
+                wikipediaLinkTv.setVisibility(View.GONE);
+            }
+        }
+
+
+        // configure behaviour of expandable text view toggle button
+        setUpToggleButton();
+
+        // get photo of location from array of Media objects to display in imageView
+        imageUrlToDisplay = null;
+        if (selectedPlace.mainMedia != null) {
+            if (selectedPlace.mainMedia.media != null && !selectedPlace.mainMedia.media.isEmpty()) {
+
+                List<Media> mediaList = selectedPlace.mainMedia.media;
+
+                for (int i = 0; i < mediaList.size(); i++) {
+                    if (mediaList.get(i).type.contentEquals("photo")) {
+                        imageUrlToDisplay = mediaList.get(i).mediaUrl;
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        setUpImageView(imageUrlToDisplay);
+
+        if (selectedPlace.phoneNumber != null && !selectedPlace.phoneNumber.isEmpty()) {
+            locationPhoneNumberTv.setText(selectedPlace.phoneNumber);
+        } else {
+            locationPhoneNumberTv.setVisibility(View.GONE);
+        }
+
+
+        if (selectedPlace.address != null && !selectedPlace.address.isEmpty()) {
+            locationAddressTv.setText(selectedPlace.address);
+
+            // set text to appear underlined to hint to user that it can be clicked on
+            locationAddressTv.setPaintFlags(locationAddressTv
+                    .getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        } else {
+            locationAddressTv.setVisibility(View.GONE);
+        }
+
+        if (selectedPlace.email != null && !selectedPlace.email.isEmpty()) {
+            locationEmailAddressTv.setText(selectedPlace.email);
+        } else {
+            locationEmailAddressTv.setVisibility(View.GONE);
+        }
+
+
+        if (selectedPlace.admission != null && !selectedPlace.admission.isEmpty()) {
+            ticketInfoTv.setText(selectedPlace.admission);
+        } else {
+            ticketInfoTv.setVisibility(View.GONE);
+        }
+
+        if (selectedPlace.openingHours != null && !selectedPlace.openingHours.isEmpty()) {
+            openingHoursTv.setText(selectedPlace.openingHours);
+        } else {
+            openingHoursTv.setVisibility(View.GONE);
+        }
+
+    }
+
 
     private void setUpImageView(String imageUrlToDisplay) {
 
@@ -411,15 +411,39 @@ public class LocationDetailsFragment extends Fragment {
         });
     }
 
+    /**
+     * This method starts Map Activity to show current location on a Map with marker
+     */
+    private void onAddressClicked(){
+
+        Intent mapIntent = new Intent(getContext(), MapsActivity.class);
+
+        // create new LatLng object to store locations co-ordinates
+        LatLng locationCoordinates =
+                new LatLng(selectedPlace.location.latitude,
+                        selectedPlace.location.longitude);
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Constants.SELECTED_PLACE_COORDINATES_KEY, locationCoordinates);
+        if (selectedPlace.name != null && !selectedPlace.name.isEmpty()) {
+            bundle.putString(Constants.SELECTED_PLACE_NAME_KEY, selectedPlace.name);
+        }
+        // add this data to intent to send to the maps activity
+        mapIntent.putExtras(bundle);
+
+        startActivity(mapIntent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        Context context = getContext();
+
         switch (item.getItemId()) {
             case R.id.favorites:
                 onFavoriteIconClicked(item);
                 break;
             case R.id.action_go_to_favorites:
-
-                Context context = getContext();
 
                 Intent favoritesActivityIntent = new Intent(context, FavoritesActivity.class);
 
@@ -427,6 +451,17 @@ public class LocationDetailsFragment extends Fragment {
                     context.startActivity(favoritesActivityIntent);
                 }
                 break;
+            case R.id.action_go_to_exchange_rates:
+
+                Intent exchangeRatesActivityIntent = new Intent(context, ExchangeRatesActivity.class);
+
+                if (exchangeRatesActivityIntent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(exchangeRatesActivityIntent);
+                }
+                break;
+
+
+
 
         }
         return super.onOptionsItemSelected(item);
@@ -446,6 +481,7 @@ public class LocationDetailsFragment extends Fragment {
     public void onPrepareOptionsMenu(@NonNull Menu menu) {
 
         super.onPrepareOptionsMenu(menu);
+
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override

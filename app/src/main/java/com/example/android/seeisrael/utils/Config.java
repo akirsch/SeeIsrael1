@@ -10,6 +10,7 @@ import android.net.NetworkInfo;
 
 import com.example.android.seeisrael.R;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -44,6 +45,17 @@ public class Config {
         itemDecoration.setDrawable(insetDivider);
 
         return itemDecoration;
+
+    }
+
+    public static String getForeignCurrencyToShekelRateAsString( double shekelToForeignCurrencyRate){
+
+        // get rate of equivalent foreign currency to 1 shekel
+        double foreignCurrencyToShekelRate = 1 / shekelToForeignCurrencyRate;
+
+        // round the rate to two decimal places and convert it to a string to display in UI
+        return String.format(Locale.ENGLISH, "\"%.2f\"", foreignCurrencyToShekelRate);
+
 
     }
 }

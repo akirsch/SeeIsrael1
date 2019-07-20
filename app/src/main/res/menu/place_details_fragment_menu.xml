@@ -15,5 +15,12 @@
         app:showAsAction="always"
         android:title="@string/favorites_icon"
         app:iconTint="@android:color/white"
-        android:icon="@drawable/ic_favorite_border" />
+        android:icon="@drawable/ic_favorite_border"/>
+
+    <item
+        android:id="@+id/action_go_to_exchange_rates"
+        android:title="@string/exchange_rates"
+        app:showAsAction="withText"
+        app:itemTextColor="@color/colorPrimaryText"
+        app:iconTint="@android:color/white"/>
 </menu>

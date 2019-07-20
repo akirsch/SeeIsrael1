@@ -68,7 +68,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
-        <activity android:name=".activities.FavoritesActivity"></activity>
+        <activity
+            android:name=".activities.FavoritesActivity">
+
+        </activity>
+        <activity android:name=".activities.ExchangeRatesActivity">
+
+        </activity>
+
         <activity
             android:name=".activities.LocationDetailsActivity"
             android:parentActivityName=".activities.LocationsActivity">

@@ -2,7 +2,6 @@ package com.example.android.seeisrael.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -41,7 +40,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             // get selected location co-ordinates from intent which stated this activity
             selectedLocationCoordinates = getIntent()
-                    .getParcelableExtra(Constants.SELECTED_PLACE_COORINATES_KEY);
+                    .getParcelableExtra(Constants.SELECTED_PLACE_COORDINATES_KEY);
 
             // Set the Toolbar as Action Bar
             setSupportActionBar(mToolbar);
