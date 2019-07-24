@@ -4,11 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="package com.example.android.seeisrael.fragments.LocationDetailsFragment">
-    <item
-        android:id="@+id/action_go_to_favorites"
-        android:title="@string/favorite_places"
-        app:showAsAction="withText"
-        app:itemTextColor="@color/colorPrimaryText"/>
 
     <item
         android:id="@+id/favorites"
@@ -16,6 +11,13 @@
         android:title="@string/favorites_icon"
         app:iconTint="@android:color/white"
         android:icon="@drawable/ic_favorite_border"/>
+
+
+    <item
+        android:id="@+id/action_go_to_favorites"
+        android:title="@string/favorite_places"
+        app:showAsAction="withText"
+        app:itemTextColor="@color/colorPrimaryText"/>
 
     <item
         android:id="@+id/action_go_to_exchange_rates"

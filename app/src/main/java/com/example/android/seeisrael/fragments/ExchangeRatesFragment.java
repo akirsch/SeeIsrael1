@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,7 @@ public class ExchangeRatesFragment extends Fragment {
     private double rubleRate;
     private double euroRate;
     private double canadianDollarRate;
+    private String LOG_TAG = ExchangeRatesFragment.class.getSimpleName();
 
     @BindView(R.id.date_tv)
     TextView currentDateView;
@@ -84,7 +86,7 @@ public class ExchangeRatesFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_echange_rates, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_exchange_rates, container, false);
 
         mUnbinder = ButterKnife.bind(this, rootView);
 
@@ -122,6 +124,8 @@ public class ExchangeRatesFragment extends Fragment {
 
 
             if (!hasApiCallBeenMade) {
+
+                Log.d(LOG_TAG, "retrieving exchange rates from api call");
 
                 exchangeRatesApiService = ExchangeRateRetrofitClient
                         .getExchangeRatesRetrofitInstance().create(ExchangeRatesApiService.class);
@@ -170,6 +174,8 @@ public class ExchangeRatesFragment extends Fragment {
                 // if api has been successfully called once before, update UI from SharedPreference values,
                 // which will be updated using the WorkManager Api
             } else {
+
+                Log.d(LOG_TAG, "retrieving exchange rates from SharedPrefs");
 
                 String defaultString = getString(R.string.default_value_string);
 
@@ -224,6 +230,19 @@ public class ExchangeRatesFragment extends Fragment {
         outState.putString(Constants.CURRENT_ZAR_RATE_KEY, randRateDisplayView.getText().toString());
         outState.putString(Constants.CURRENT_CAD_RATE_KEY, canadianDollarRateDisplayView.getText().toString());
 
+
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        USDollarRateDisplayView.setText(savedInstanceState.getCharSequence(Constants.CURRENT_USD_RATE_KEY));
+        poundsRateDisplayView.setText(savedInstanceState.getCharSequence(Constants.CURRENT_GBP_RATE_KEY));
+        euroRateDisplayView.setText(savedInstanceState.getCharSequence(Constants.CURRENT_EUR_RATE_KEY));
+        randRateDisplayView.setText(savedInstanceState.getCharSequence(Constants.CURRENT_ZAR_RATE_KEY));
+        rubleRateDisplayView.setText(savedInstanceState.getCharSequence(Constants.CURRENT_RUB_RATE_KEY));
+        canadianDollarRateDisplayView.setText(savedInstanceState.getCharSequence(Constants.CURRENT_CAD_RATE_KEY));
 
     }
 

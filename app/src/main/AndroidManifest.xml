@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-    <uses-permission android:name="android.permission.READ_CALENDAR"/>
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -25,6 +25,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+        <service android:name=".widget.SeeIsraelWidgetService"/>
+
+        <receiver android:name=".widget.SeeIsraelCurrencyWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/see_israel_currency_widget_info" />
+        </receiver>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -37,14 +49,12 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value=""/>
+            android:value="" />
 
         <activity
             android:name=".activities.MapsActivity"
@@ -68,14 +78,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
-        <activity
-            android:name=".activities.FavoritesActivity">
-
-        </activity>
-        <activity android:name=".activities.ExchangeRatesActivity">
-
-        </activity>
-
+        <activity android:name=".activities.FavoritesActivity"></activity>
+        <activity android:name=".activities.ExchangeRatesActivity"></activity>
         <activity
             android:name=".activities.LocationDetailsActivity"
             android:parentActivityName=".activities.LocationsActivity">

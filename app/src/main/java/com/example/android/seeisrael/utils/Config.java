@@ -54,7 +54,7 @@ public class Config {
         double foreignCurrencyToShekelRate = 1 / shekelToForeignCurrencyRate;
 
         // round the rate to two decimal places and convert it to a string to display in UI
-        return String.format(Locale.ENGLISH, "\"%.2f\"", foreignCurrencyToShekelRate);
+        return String.format(Locale.ENGLISH, "%.2f", foreignCurrencyToShekelRate);
 
 
     }

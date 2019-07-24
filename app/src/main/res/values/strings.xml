@@ -109,4 +109,14 @@
 
     <string name="unique_work_request_id">get currency data work request</string>
 
+    <!-- Strings for app widget-->
+
+    <string name="add_widget">Add widget</string>
+
+    <string name="USD">USD</string>
+    <string name="GBP">GBP</string>
+    <string name="ZAR">ZAR</string>
+    <string name="EUR">EUR</string>
+    <string name="CAD">CAD</string>
+    <string name="RUB">RUB</string>
 </resources>

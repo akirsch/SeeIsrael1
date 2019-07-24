@@ -1,0 +1,180 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent_linear_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_margin="@dimen/widget_margin"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:id="@+id/vertical_linear_layout1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/small_view_margin"
+            android:text="@string/USD"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/dollar_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            tools:text="3.55"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:drawableEnd="@drawable/ils_symbol"
+            android:drawablePadding="@dimen/small_view_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:text="@string/GBP"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/pound_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/small_view_margin"
+            tools:text="4.55"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:drawableEnd="@drawable/ils_symbol"
+            android:drawablePadding="@dimen/small_view_margin"/>
+
+
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/standard_view_margin"
+        android:layout_marginTop="@dimen/standard_view_margin"
+        android:background="@color/color_divider"/>
+
+    <LinearLayout
+        android:id="@+id/vertical_linear_layout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/small_view_margin"
+            android:text="@string/ZAR"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/rand_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            tools:text="7.65"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:drawableEnd="@drawable/ils_symbol"
+            android:drawablePadding="@dimen/small_view_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:text="@string/EUR"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/euro_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/small_view_margin"
+            tools:text="3.42"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:drawableEnd="@drawable/ils_symbol"
+            android:drawablePadding="@dimen/small_view_margin"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/standard_view_margin"
+        android:layout_marginTop="@dimen/standard_view_margin"
+        android:background="@color/color_divider"/>
+
+    <LinearLayout
+        android:id="@+id/vertical_linear_layout3"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/small_view_margin"
+            android:text="@string/CAD"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/canadian_dollar_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            tools:text="7.65"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:drawableEnd="@drawable/ils_symbol"
+            android:drawablePadding="@dimen/small_view_margin"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="6dp"
+            android:text="@string/RUB"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_gravity="center"/>
+
+        <TextView
+            android:id="@+id/rouble_rate_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/small_view_margin"
+            tools:text="5.42"
+            android:textColor="@color/colorPrimaryText"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:drawableEnd="@drawable/ils_symbol"
+            android:drawablePadding="@dimen/small_view_margin"/>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

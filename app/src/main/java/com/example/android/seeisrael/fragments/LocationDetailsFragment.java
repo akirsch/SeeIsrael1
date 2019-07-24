@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -172,7 +174,7 @@ public class LocationDetailsFragment extends Fragment {
 
         // configure the toolbar
         mToolbar = getActivity().findViewById(R.id.toolbar);
-        mToolbar.setBackgroundColor(Color.TRANSPARENT);
+
 
         // Set the Toolbar as Action Bar
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
@@ -183,9 +185,18 @@ public class LocationDetailsFragment extends Fragment {
         // enable up navigation
         Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        // Set the padding to match the Status Bar height (to avoid title being cut off by
-        // transparent toolbar
-        mToolbar.setPadding(0, 25, 0, 0);
+        // Check if the version of Android is Lollipop or higher
+        if (Build.VERSION.SDK_INT >= 21) {
+
+            // Set the status bar to dark-semi-transparentish
+            getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+            // Set paddingTop of toolbar to height of status bar.
+            // Fixes statusbar covers toolbar issue
+            mToolbar.setPadding(0, 25, 0, 0);
+
+        }
 
         if (mSelectedPlaceId != null) {
             if (Config.hasNetworkConnection(Objects.requireNonNull(getContext()))) {
