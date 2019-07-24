@@ -5,32 +5,25 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.example.android.seeisrael.R;
 import com.example.android.seeisrael.activities.ExchangeRatesActivity;
-import com.example.android.seeisrael.models.ExchangeRatesResponse;
-import com.example.android.seeisrael.repositories.CurrencyDataRepository;
-import com.example.android.seeisrael.utils.Config;
-import com.example.android.seeisrael.utils.Constants;
 
 /**
  * Implementation of App Widget functionality.
  */
 public class SeeIsraelCurrencyWidgetProvider extends AppWidgetProvider {
 
-    private static final String TAG = SeeIsraelCurrencyWidgetProvider.class.getSimpleName();
+    private static final String LOG_TAG = SeeIsraelCurrencyWidgetProvider.class.getSimpleName();
 
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId, String dollarRate, String poundRate,
                                 String euroRate, String randRate, String roubleRate, String caDollarRate) {
 
-        Log.d(TAG, "updateAppWidget method called in widget provider");
+        Log.d(LOG_TAG, "updateAppWidget method called in widget provider");
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.see_israel_currency_widget);
@@ -58,7 +51,7 @@ public class SeeIsraelCurrencyWidgetProvider extends AppWidgetProvider {
     public static void updateExchangeRateWidgets (Context context, AppWidgetManager appWidgetManager,
                                                   int[] appWidgetIds, String dollarRate, String poundRate,
                                                   String euroRate, String randRate, String roubleRate, String caDollarRate){
-        Log.d(TAG, "updateExchangeRateWidgets method called in widget provider");
+        Log.d(LOG_TAG, "updateExchangeRateWidgets method called in widget provider");
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId, dollarRate,
                     poundRate, euroRate, randRate, roubleRate, caDollarRate);
@@ -68,7 +61,7 @@ public class SeeIsraelCurrencyWidgetProvider extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // Start the intent service action update widget, which takes care of updating the widget UI
-        Log.d(TAG, "onUpdate method in widgetProvider called");
+        Log.d(LOG_TAG, "onUpdate method in widgetProvider called");
         SeeIsraelWidgetService.startActionUpdateWidget(context);
 
     }

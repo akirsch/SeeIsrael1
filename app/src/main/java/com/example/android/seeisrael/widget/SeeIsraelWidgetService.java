@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -16,7 +15,6 @@ import com.example.android.seeisrael.R;
 import com.example.android.seeisrael.interfaces.ExchangeRatesApiService;
 import com.example.android.seeisrael.models.ExchangeRatesResponse;
 import com.example.android.seeisrael.networking.ExchangeRateRetrofitClient;
-import com.example.android.seeisrael.repositories.CurrencyDataRepository;
 import com.example.android.seeisrael.utils.Config;
 import com.example.android.seeisrael.utils.Constants;
 
@@ -34,7 +32,7 @@ public class SeeIsraelWidgetService extends IntentService {
     String euroRate;
     String randRate;
     String roubleRate;
-    String caDollarRate;
+    String canDollarRate;
 
 
     public static final String ACTION_UPDATE_WIDGET = "com.example.android.seeisrael.widget.action.update_widget";
@@ -107,12 +105,12 @@ public class SeeIsraelWidgetService extends IntentService {
             roubleRate = sharedPreferences.getString(getString(R.string.ruble_rate_key),
                     getString(R.string.default_value_string));
 
-            caDollarRate = sharedPreferences.getString(getString(R.string.canadian_dollar_rate_key),
+            canDollarRate = sharedPreferences.getString(getString(R.string.canadian_dollar_rate_key),
                     getString(R.string.default_value_string));
 
 
             SeeIsraelCurrencyWidgetProvider.updateExchangeRateWidgets(this, appWidgetManager,
-                    appWidgetIds, dollarRate, poundRate, euroRate, randRate, roubleRate, caDollarRate);
+                    appWidgetIds, dollarRate, poundRate, euroRate, randRate, roubleRate, canDollarRate);
             // if no values exist in SharedPreferences, call the API to get the data
         } else {
 
@@ -142,7 +140,7 @@ public class SeeIsraelWidgetService extends IntentService {
 
                         roubleRate = Config.getForeignCurrencyToShekelRateAsString(exchangeRatesResponse.rates.roubles);
 
-                        caDollarRate = Config.getForeignCurrencyToShekelRateAsString(exchangeRatesResponse.rates.canadianDollars);
+                        canDollarRate = Config.getForeignCurrencyToShekelRateAsString(exchangeRatesResponse.rates.canadianDollars);
 
 
 
@@ -157,7 +155,7 @@ public class SeeIsraelWidgetService extends IntentService {
             });
 
             SeeIsraelCurrencyWidgetProvider.updateExchangeRateWidgets(this, appWidgetManager,
-                    appWidgetIds, dollarRate, poundRate, euroRate, randRate, roubleRate, caDollarRate);
+                    appWidgetIds, dollarRate, poundRate, euroRate, randRate, roubleRate, canDollarRate);
 
 
         }
