@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
@@ -45,6 +46,7 @@ import com.example.android.seeisrael.viewmodels.LocationDetailsViewModelFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 import java.util.Objects;
@@ -55,7 +57,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProviders;
 import at.blogc.android.views.ExpandableTextView;
 import butterknife.BindView;
@@ -68,12 +70,14 @@ public class LocationDetailsFragment extends Fragment {
     private Unbinder mUnbinder;
     private String mSelectedPlaceId;
     private String mSelectedPlaceName;
+    private boolean isInTwoPane;
     private String imageUrlToDisplay;
     private Place selectedPlace;
     private String TAG;
     private AddPlaceViewModelFactory factory;
     private AddPlaceViewModel viewModel;
     private PlacesDatabase mDb;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     public LocationDetailsFragment() {
     }
@@ -85,6 +89,9 @@ public class LocationDetailsFragment extends Fragment {
 
     @BindView(R.id.location_image_view)
     ImageView locationImageView;
+
+    @BindView(R.id.default_placeholder_place_image_icon)
+    ImageView defaultNoPicToDisplayIcon;
 
     @BindView(R.id.location_title_view)
     TextView locationTitleTv;
@@ -106,9 +113,6 @@ public class LocationDetailsFragment extends Fragment {
 
     @BindView(R.id.email_address_tv)
     TextView locationEmailAddressTv;
-
-    @BindView(R.id.watch_video_tv)
-    TextView watchMovieTv;
 
     @BindView(R.id.wikipedia_link_tv)
     TextView wikipediaLinkTv;
@@ -151,6 +155,7 @@ public class LocationDetailsFragment extends Fragment {
         appBarLayout.setVisibility(View.GONE);
         detailsLinearLayoutContainer.setVisibility(View.GONE);
         fabButton.setVisibility(View.GONE);
+        defaultNoPicToDisplayIcon.setVisibility(View.GONE);
 
 
         return rootView;
@@ -161,16 +166,29 @@ public class LocationDetailsFragment extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
-        TAG = getActivity().getClass().getSimpleName();
+        TAG = Objects.requireNonNull(getActivity()).getClass().getSimpleName();
 
-        getActivity().getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getActivity().getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
 
-        getActivity().getWindow().setStatusBarColor(Color.TRANSPARENT);
+        // if this fragment was created with arguments, it is being displayed in 2 pane mode on a tablet
+        // within the LocationsActivity
+        if (getArguments() != null){
+            mSelectedPlaceId = getArguments().getString(Constants.SELECTED_PLACE_ID_KEY);
+            mSelectedPlaceName = getArguments().getString(Constants.SELECTED_PLACE_NAME_KEY);
+            isInTwoPane = getArguments().getBoolean(Constants.IS_TWO_PANE_BOOLEAN_KEY);
 
-        mSelectedPlaceId = Objects.requireNonNull(getActivity()).getIntent().getStringExtra(Constants.SELECTED_PLACE_ID_KEY);
-        mSelectedPlaceName = Objects.requireNonNull(getActivity()).getIntent().getStringExtra(Constants.SELECTED_PLACE_NAME_KEY);
+        // otherwise, the fragment is being displayed on its own within a separate LocationsDetailsActivity
+        } else {
+            mSelectedPlaceId = Objects.requireNonNull(getActivity()).getIntent().getStringExtra(Constants.SELECTED_PLACE_ID_KEY);
+            mSelectedPlaceName = Objects.requireNonNull(getActivity()).getIntent().getStringExtra(Constants.SELECTED_PLACE_NAME_KEY);
+            isInTwoPane = false;
+        }
+
+
 
         // configure the toolbar
         mToolbar = getActivity().findViewById(R.id.toolbar);
@@ -179,24 +197,23 @@ public class LocationDetailsFragment extends Fragment {
         // Set the Toolbar as Action Bar
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
 
-        // Toolbar shouldn't display title as this is shown in textView in layout
-        Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setTitle("");
+        // if app is in landscape mode on a phone, set title of toolbar
+        if (getActivity().findViewById(R.id.phone_landscape_linear_layout) != null){
+            Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar())
+                    .setTitle(mSelectedPlaceName);
+        } else{
+            // Toolbar shouldn't display title as this is shown in textView in layout
+            Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setTitle("");
+        }
 
         // enable up navigation
         Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
-        // Check if the version of Android is Lollipop or higher
-        if (Build.VERSION.SDK_INT >= 21) {
 
-            // Set the status bar to dark-semi-transparentish
-            getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        // Set paddingTop of toolbar to height of status bar.
+        // Fixes statusbar covers toolbar issue
+        mToolbar.setPadding(0, 25, 0, 0);
 
-            // Set paddingTop of toolbar to height of status bar.
-            // Fixes statusbar covers toolbar issue
-            mToolbar.setPadding(0, 25, 0, 0);
-
-        }
 
         if (mSelectedPlaceId != null) {
             if (Config.hasNetworkConnection(Objects.requireNonNull(getContext()))) {
@@ -213,26 +230,23 @@ public class LocationDetailsFragment extends Fragment {
 
                 locationDetailsViewModel.initialize();
                 locationDetailsViewModel.getLocationDetailsData()
-                        .observe(this, new Observer<PlaceDetailsMainBodyResponse>() {
-                            @Override
-                            public void onChanged(PlaceDetailsMainBodyResponse placeDetailsMainBodyResponse) {
+                        .observe(this, placeDetailsMainBodyResponse -> {
 
-                                if (placeDetailsMainBodyResponse != null) {
+                            if (placeDetailsMainBodyResponse != null) {
 
-                                    selectedPlace = placeDetailsMainBodyResponse.data.place;
+                                selectedPlace = placeDetailsMainBodyResponse.data.place;
 
-                                    setUpDetailsUI();
+                                setUpDetailsUI();
 
-                                } else {
-                                    appBarLayout.setVisibility(View.GONE);
-                                    detailsLinearLayoutContainer.setVisibility(View.GONE);
-                                    loadingProgressBar.setVisibility(View.GONE);
-                                    fabButton.setVisibility(View.GONE);
-                                    noContentToDisplayView.setVisibility(View.VISIBLE);
-                                }
-
-
+                            } else {
+                                appBarLayout.setVisibility(View.GONE);
+                                detailsLinearLayoutContainer.setVisibility(View.GONE);
+                                loadingProgressBar.setVisibility(View.GONE);
+                                fabButton.setVisibility(View.GONE);
+                                noContentToDisplayView.setVisibility(View.VISIBLE);
                             }
+
+
                         });
 
 
@@ -242,34 +256,28 @@ public class LocationDetailsFragment extends Fragment {
             }
         }
 
-        locationAddressTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // handle click on address of location by starting Map Activity with intent
-                if (selectedPlace.location != null) {
-                    onAddressClicked();
-                }
+        locationAddressTv.setOnClickListener(v -> {
+            // handle click on address of location by starting Map Activity with intent
+            if (selectedPlace.location != null) {
+                onAddressClicked();
             }
         });
 
-        fabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // when user licks on fab button, start calendar app to let user add a visit
-                // to this location to their calendar
-                if (selectedPlace.name != null){
+        fabButton.setOnClickListener(v -> {
+            // when user licks on fab button, start calendar app to let user add a visit
+            // to this location to their calendar
+            if (selectedPlace.name != null) {
 
-                    Intent calendarIntent = new Intent(Intent.ACTION_INSERT)
-                            .setData(CalendarContract.Events.CONTENT_URI)
-                            .putExtra(CalendarContract.Events.TITLE, selectedPlace.name)
-                            .putExtra(CalendarContract.Events.DESCRIPTION, "Visit to " + selectedPlace.name);
+                Intent calendarIntent = new Intent(Intent.ACTION_INSERT)
+                        .setData(CalendarContract.Events.CONTENT_URI)
+                        .putExtra(CalendarContract.Events.TITLE, selectedPlace.name)
+                        .putExtra(CalendarContract.Events.DESCRIPTION, "Visit to " + selectedPlace.name);
 
-                    if (selectedPlace.address != null){
-                        calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, selectedPlace.address);
-                    }
-                    startActivity(calendarIntent);
-
+                if (selectedPlace.address != null) {
+                    calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, selectedPlace.address);
                 }
+                startActivity(calendarIntent);
+
             }
         });
 
@@ -386,10 +394,8 @@ public class LocationDetailsFragment extends Fragment {
                     .apply(requestOptions)
                     .into(locationImageView);
         } else {
-            Glide.with(Objects.requireNonNull(getContext()))
-                    .load(R.mipmap.ic_launcher)
-                    .apply(requestOptions)
-                    .into(locationImageView);
+           locationImageView.setVisibility(View.GONE);
+           defaultNoPicToDisplayIcon.setVisibility(View.VISIBLE);
         }
     }
 
@@ -425,7 +431,7 @@ public class LocationDetailsFragment extends Fragment {
     /**
      * This method starts Map Activity to show current location on a Map with marker
      */
-    private void onAddressClicked(){
+    private void onAddressClicked() {
 
         Intent mapIntent = new Intent(getContext(), MapsActivity.class);
 
@@ -448,6 +454,9 @@ public class LocationDetailsFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
+        FragmentManager fragmentManager =
+                Objects.requireNonNull(getActivity()).getSupportFragmentManager();
+
         Context context = getContext();
 
         switch (item.getItemId()) {
@@ -456,22 +465,37 @@ public class LocationDetailsFragment extends Fragment {
                 break;
             case R.id.action_go_to_favorites:
 
-                Intent favoritesActivityIntent = new Intent(context, FavoritesActivity.class);
+                if (isInTwoPane){
+                    FavoritesFragment favoritesFragment = new FavoritesFragment();
 
-                if (favoritesActivityIntent.resolveActivity(context.getPackageManager()) != null) {
-                    context.startActivity(favoritesActivityIntent);
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.location_category_selection_fragment_container, favoritesFragment)
+                            .commit();
+
+                } else {
+                    Intent favoritesActivityIntent = new Intent(context, FavoritesActivity.class);
+
+                    if (favoritesActivityIntent.resolveActivity(Objects.requireNonNull(context).getPackageManager()) != null) {
+                        context.startActivity(favoritesActivityIntent);
+                    }
                 }
                 break;
             case R.id.action_go_to_exchange_rates:
 
+                if (isInTwoPane){
+                    ExchangeRatesFragment exchangeRatesFragment = new ExchangeRatesFragment();
+
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.location_detail_fragment_container, exchangeRatesFragment)
+                            .commit();
+                }
+
                 Intent exchangeRatesActivityIntent = new Intent(context, ExchangeRatesActivity.class);
 
-                if (exchangeRatesActivityIntent.resolveActivity(context.getPackageManager()) != null) {
+                if (exchangeRatesActivityIntent.resolveActivity(Objects.requireNonNull(context).getPackageManager()) != null) {
                     context.startActivity(exchangeRatesActivityIntent);
                 }
                 break;
-
-
 
 
         }
@@ -494,37 +518,28 @@ public class LocationDetailsFragment extends Fragment {
         super.onPrepareOptionsMenu(menu);
 
 
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
+        AppExecutors.getInstance().diskIO().execute(() -> {
 
-                final MenuItem favoritesIcon = menu.getItem(1);
-                Place place = mDb.favoritePlacesDao().loadPlaceById(mSelectedPlaceId);
+            final MenuItem favoritesIcon = menu.getItem(1);
+            Place place = mDb.favoritePlacesDao().loadPlaceById(mSelectedPlaceId);
 
-                if (place == null) {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
-                                    .getDrawable(R.drawable.ic_favorite_border);
-                            assert notSelectedAsFavoriteIcon != null;
-                            notSelectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                            favoritesIcon.setIcon(notSelectedAsFavoriteIcon);
-                        }
-                    });
-                } else {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
-                                    .getDrawable(R.drawable.ic_favorite);
-                            assert selectedAsFavoriteIcon != null;
-                            selectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                            favoritesIcon.setIcon(selectedAsFavoriteIcon);
-                        }
-                    });
+            if (place == null) {
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                    Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                            .getDrawable(R.drawable.ic_favorite_border);
+                    assert notSelectedAsFavoriteIcon != null;
+                    notSelectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                    favoritesIcon.setIcon(notSelectedAsFavoriteIcon);
+                });
+            } else {
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+                    Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                            .getDrawable(R.drawable.ic_favorite);
+                    assert selectedAsFavoriteIcon != null;
+                    selectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                    favoritesIcon.setIcon(selectedAsFavoriteIcon);
+                });
 
-                }
             }
         });
 
@@ -532,45 +547,36 @@ public class LocationDetailsFragment extends Fragment {
 
     private void onFavoriteIconClicked(final MenuItem item) {
 
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
+        AppExecutors.getInstance().diskIO().execute(() -> {
 
-                final Place place = mDb.favoritePlacesDao().loadPlaceById(mSelectedPlaceId);
+            final Place place = mDb.favoritePlacesDao().loadPlaceById(mSelectedPlaceId);
 
-                if (place == null) {
+            if (place == null) {
 
-                    mDb.favoritePlacesDao().insertPlace(selectedPlace);
+                mDb.favoritePlacesDao().insertPlace(selectedPlace);
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // UI changes to show full favorites icon once Place has been added to favorites
-                            Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
-                                    .getDrawable(R.drawable.ic_favorite);
-                            assert selectedAsFavoriteIcon != null;
-                            selectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                            item.setIcon(selectedAsFavoriteIcon);
-                        }
-                    });
-                } else {
-                    // If movie was previously listed a favorite,
-                    // when favorites button is clicked remove this movie from the favorite movie database
-                    mDb.favoritePlacesDao().deletePlace(place);
+                getActivity().runOnUiThread(() -> {
+                    // UI changes to show full favorites icon once Place has been added to favorites
+                    Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                            .getDrawable(R.drawable.ic_favorite);
+                    assert selectedAsFavoriteIcon != null;
+                    selectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                    item.setIcon(selectedAsFavoriteIcon);
+                });
+            } else {
+                // If movie was previously listed a favorite,
+                // when favorites button is clicked remove this movie from the favorite movie database
+                mDb.favoritePlacesDao().deletePlace(place);
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // UI changes to show empty favorites icon now that user has removed it from database
-                            Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
-                                    .getDrawable(R.drawable.ic_favorite_border);
-                            assert notSelectedAsFavoriteIcon != null;
-                            notSelectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                            item.setIcon(notSelectedAsFavoriteIcon);
-                        }
-                    });
+                getActivity().runOnUiThread(() -> {
+                    // UI changes to show empty favorites icon now that user has removed it from database
+                    Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
+                            .getDrawable(R.drawable.ic_favorite_border);
+                    assert notSelectedAsFavoriteIcon != null;
+                    notSelectedAsFavoriteIcon.setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                    item.setIcon(notSelectedAsFavoriteIcon);
+                });
 
-                }
             }
         });
 
@@ -580,6 +586,10 @@ public class LocationDetailsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         mUnbinder.unbind();
+    }
+
+    public void setPlaceId(String id){
+        this.mSelectedPlaceId = id;
     }
 }
 

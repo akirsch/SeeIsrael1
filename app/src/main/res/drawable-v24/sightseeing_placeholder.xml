@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:top="2dp"
+        android:bottom="2dp"
+        android:start="2dp"
+        android:end="2dp">
+
+        <shape
+
+            android:shape="oval">
+
+            <solid android:color="@color/sightseeing_placeholder_color" />
+
+            <size
+                android:width="@dimen/avatar_diameter"
+                android:height="@dimen/avatar_diameter" />
+
+        </shape>
+    </item>
+
+    <item
+        android:top="15dp"
+        android:start="15dp"
+        android:end="15dp"
+        android:bottom="15dp"
+        android:drawable="@drawable/ic_local_see"/>
+
+
+
+
+
+
+
+
+</layer-list>

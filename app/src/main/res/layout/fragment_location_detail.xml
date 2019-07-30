@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    app:statusBarBackground="@android:color/transparent">
+    android:theme="@style/TransparentStatusBarTheme">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -20,8 +20,14 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="false">
+            android:fitsSystemWindows="true">
 
+            <ImageView
+                android:id="@+id/default_placeholder_place_image_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_photo"/>
 
             <ImageView
                 android:id="@+id/location_image_view"
@@ -46,9 +52,8 @@
                 android:id="@+id/location_title_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/location_image_view"
-                android:layout_marginStart="@dimen/standard_view_margin"
-                android:layout_marginTop="@dimen/small_view_margin"
+                android:layout_above="@id/location_subtitle_tv"
+                android:layout_margin="@dimen/standard_view_margin"
                 android:fontFamily="@font/roboto"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
                 android:textColor="@android:color/white"
@@ -58,10 +63,9 @@
                 android:id="@+id/location_subtitle_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/location_title_view"
                 android:layout_marginStart="@dimen/standard_view_margin"
-                android:layout_marginTop="@dimen/small_view_margin"
-                android:layout_marginBottom="@dimen/small_view_margin"
+                android:layout_marginBottom="@dimen/standard_view_margin"
+                android:layout_alignParentBottom="true"
                 android:fontFamily="@font/roboto"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                 android:textColor="@android:color/white"
@@ -170,20 +174,6 @@
                 android:textSize="@dimen/list_item_primary_text_size"
                 tools:text="info@toweroflondon.org.uk" />
 
-
-            <TextView
-                android:id="@+id/watch_video_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/standard_view_margin"
-                android:layout_marginTop="@dimen/standard_view_margin"
-                android:drawableStart="@drawable/ic_videocam"
-                android:drawablePadding="@dimen/standard_view_margin"
-                android:drawableTint="@color/color_icon_default"
-                android:fontFamily="@font/roboto"
-                android:textColor="@color/colorPrimaryText"
-                android:textSize="@dimen/list_item_primary_text_size"
-                android:text="See 360 Video" />
 
             <TextView
                 android:id="@+id/wikipedia_link_tv"

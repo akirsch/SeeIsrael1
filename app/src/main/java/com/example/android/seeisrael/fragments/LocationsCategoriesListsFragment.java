@@ -18,7 +18,6 @@ import com.example.android.seeisrael.models.Places;
 import com.example.android.seeisrael.utils.Constants;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -41,14 +40,16 @@ public class LocationsCategoriesListsFragment extends Fragment {
     private Unbinder mUnbinder;
     private LocationCategoryFragmentPagerAdapter mLocationCategoryFragmentPagerAdapter;
     public static final int BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT = 1;
-    Places chosenPlace;
+    private Places chosenPlace;
+    private boolean isBeingDisplayedInTwoPane;
 
     private final List<Pair<String, Fragment>> pages = new ArrayList<>();
 
     public LocationsCategoriesListsFragment() {
     }
 
-    Toolbar mToolbar;
+    private Toolbar mToolbar;
+    private AdView mAdView;
 
     @BindView(R.id.tab_layout)
     TabLayout mTablayout;
@@ -57,7 +58,7 @@ public class LocationsCategoriesListsFragment extends Fragment {
     ViewPager mViewPager;
 
 
-    private AdView mAdView;
+
 
 
     @Override
@@ -83,13 +84,30 @@ public class LocationsCategoriesListsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // if this fragment was created with arguments directly from parent Activity,
+        // it is being displayed in 2 pane mode on a tablet
+        if (getArguments() != null){
 
-        // get chosen town from the parent Activity of this Fragment
-        chosenPlace = Objects.requireNonNull(getActivity()).getIntent().getParcelableExtra(Constants.SELECTED_PLACES_KEY);
+            chosenPlace = getArguments().getParcelable(Constants.SELECTED_PLACES_KEY);
+            isBeingDisplayedInTwoPane = getArguments().getBoolean(Constants.IS_TWO_PANE_BOOLEAN_KEY);
+
+            // else this Fragment is being statically inflated by its parent Activity in single pane layout
+        } else {
+            // get chosen town from the parent Activity of this Fragment
+            chosenPlace = Objects.requireNonNull(getActivity()).getIntent().getParcelableExtra(Constants.SELECTED_PLACES_KEY);
+            isBeingDisplayedInTwoPane = false;
+        }
+
 
         mToolbar = getActivity().findViewById(R.id.toolbar);
-        mAdView = getActivity().findViewById(R.id.adView);
 
+        mAdView = Objects.requireNonNull(getActivity()).findViewById(R.id.adView);
+
+        // load test add into AdView
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("3EB28E624CAD65EA74E3971763255324")
+                .build();
+        mAdView.loadAd(adRequest);
 
         // Set the Toolbar as Action Bar
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
@@ -104,31 +122,39 @@ public class LocationsCategoriesListsFragment extends Fragment {
 
         pages.add(new Pair<>(getString(R.string.discover),
                 MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
-                        getString(R.string.discovering_api_call_string))));
+                        getString(R.string.discovering_api_call_string), R.drawable.discover_palceholder,
+                        isBeingDisplayedInTwoPane)));
         pages.add(new Pair<>(getString(R.string.sightseeing),
                 MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
-                        getString(R.string.sightseeing_api_call_string))));
+                        getString(R.string.sightseeing_api_call_string), R.drawable.sightseeing_placeholder,
+                        isBeingDisplayedInTwoPane)));
         pages.add(new Pair<>(getString(R.string.eat),
                 MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
-                        getString(R.string.eating_api_call_string))));
+                        getString(R.string.eating_api_call_string), R.drawable.eating_placeholder,
+                        isBeingDisplayedInTwoPane)));
         pages.add(new Pair<>(getString(R.string.shopping),
                 MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
-                        getString(R.string.shopping_api_call_string))));
+                        getString(R.string.shopping_api_call_string), R.drawable.shopping_placeholder,
+                        isBeingDisplayedInTwoPane)));
         pages.add(new Pair<>(getString(R.string.playing),
                 MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
-                        getString(R.string.playing_api_call_string))));
+                        getString(R.string.playing_api_call_string), R.drawable.playing_placeholder,
+                        isBeingDisplayedInTwoPane)));
         pages.add(new Pair<>(getString(R.string.relaxing),
                 MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
-                        getString(R.string.relaxing_api_call_string))));
+                        getString(R.string.relaxing_api_call_string), R.drawable.relaxing_placeholder,
+                        isBeingDisplayedInTwoPane)));
         pages.add(new Pair<>(getString(R.string.travelling),
                 MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
-                        getString(R.string.traveling_api_call_string))));
+                        getString(R.string.traveling_api_call_string), R.drawable.transport_placeholder,
+                        isBeingDisplayedInTwoPane)));
         pages.add(new Pair<>(getString(R.string.hiking),
                 MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
-                        getString(R.string.hiking_api_call_string))));
+                        getString(R.string.hiking_api_call_string), R.drawable.hiking_placeholder, isBeingDisplayedInTwoPane)));
         pages.add(new Pair<>(getString(R.string.sports),
                 MyViewPagerCategoryFragment.instanceOfWithData(chosenPlace,
-                        getString(R.string.sports_api_call_string))));
+                        getString(R.string.sports_api_call_string), R.drawable.sports_placeholder,
+                        isBeingDisplayedInTwoPane)));
 
 
         mLocationCategoryFragmentPagerAdapter = new LocationCategoryFragmentPagerAdapter(getContext(),
@@ -136,11 +162,8 @@ public class LocationsCategoriesListsFragment extends Fragment {
 
         mViewPager.setAdapter(mLocationCategoryFragmentPagerAdapter);
 
-        // load test add into AdView
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
 
-        // .addTestDevice("3EB28E624CAD65EA74E3971763255324")
+
 
     }
 
@@ -177,6 +200,7 @@ public class LocationsCategoriesListsFragment extends Fragment {
 
                 Intent favoritesActivityIntent = new Intent(context, FavoritesActivity.class);
 
+                assert context != null;
                 if (favoritesActivityIntent.resolveActivity(context.getPackageManager()) != null) {
                     context.startActivity(favoritesActivityIntent);
                 }
@@ -185,6 +209,7 @@ public class LocationsCategoriesListsFragment extends Fragment {
 
                 Intent exchangeRatesActivityIntent = new Intent(context, ExchangeRatesActivity.class);
 
+                assert context != null;
                 if (exchangeRatesActivityIntent.resolveActivity(context.getPackageManager()) != null) {
                     context.startActivity(exchangeRatesActivityIntent);
                 }

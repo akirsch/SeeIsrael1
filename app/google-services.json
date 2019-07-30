@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "530224151970-tp2cigckgdv2ko0oel2r4log6hq3alg2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.seeisrael",
+            "certificate_hash": "cc237f25c4aaeb55d90aa9d498698684ddd32dcd"
+          }
+        },
+        {
           "client_id": "530224151970-njc2tcm3b555nk4puv7u1656hnfumchc.apps.googleusercontent.com",
           "client_type": 3
         }

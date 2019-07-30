@@ -23,6 +23,10 @@ public class Constants {
 
     public static final String SELECTED_PLACE_NAME_KEY = "selected_place_name";
 
+    public static final String IS_TWO_PANE_BOOLEAN_KEY = "two_pane_boolean_key";
+
+    public static final String SELECTED_PLACEHOLDER_IMAGE_ID_KEY = "selected placeholder image id";
+
     public static final String SELECTED_PLACE_COORDINATES_KEY = "place_coordinates";
 
     public static final String CURRENT_USD_RATE_KEY = "usd_rate_key";

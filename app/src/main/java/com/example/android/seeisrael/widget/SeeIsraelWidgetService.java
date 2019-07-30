@@ -142,7 +142,8 @@ public class SeeIsraelWidgetService extends IntentService {
 
                         canDollarRate = Config.getForeignCurrencyToShekelRateAsString(exchangeRatesResponse.rates.canadianDollars);
 
-
+                        SeeIsraelCurrencyWidgetProvider.updateExchangeRateWidgets(getApplicationContext(), appWidgetManager,
+                                appWidgetIds, dollarRate, poundRate, euroRate, randRate, roubleRate, canDollarRate);
 
                     }
                 }
@@ -154,8 +155,7 @@ public class SeeIsraelWidgetService extends IntentService {
                 }
             });
 
-            SeeIsraelCurrencyWidgetProvider.updateExchangeRateWidgets(this, appWidgetManager,
-                    appWidgetIds, dollarRate, poundRate, euroRate, randRate, roubleRate, canDollarRate);
+
 
 
         }

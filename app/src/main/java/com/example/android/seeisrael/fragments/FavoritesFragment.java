@@ -15,14 +15,12 @@ import com.example.android.seeisrael.utils.AppExecutors;
 import com.example.android.seeisrael.utils.Config;
 import com.example.android.seeisrael.viewmodels.FavoritesViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,7 +32,6 @@ import butterknife.Unbinder;
 public class FavoritesFragment extends Fragment {
 
     private Unbinder mUnbinder;
-    private ArrayList<Place> mFavotitePlacesList;
     private FavoriteListAdapter mFavoritePlacesListAdapter;
     private PlacesDatabase mDb;
 
@@ -89,13 +86,10 @@ public class FavoritesFragment extends Fragment {
             @Override
             public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 // Here is where you'll implement swipe to delete
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        int position = viewHolder.getAdapterPosition();
-                        List<Place> places = mFavoritePlacesListAdapter.getFavoritePlaces();
-                        mDb.favoritePlacesDao().deletePlace(places.get(position));
-                    }
+                AppExecutors.getInstance().diskIO().execute(() -> {
+                    int position = viewHolder.getAdapterPosition();
+                    List<Place> places = mFavoritePlacesListAdapter.getFavoritePlaces();
+                    mDb.favoritePlacesDao().deletePlace(places.get(position));
                 });
             }
         }).attachToRecyclerView(mLocationListRecyclerView);
@@ -116,12 +110,9 @@ public class FavoritesFragment extends Fragment {
     private void setUpViewModel(){
 
         FavoritesViewModel viewModel = ViewModelProviders.of(this).get(FavoritesViewModel.class);
-        viewModel.getFavoritePlaces().observe(this, new Observer<List<Place>>() {
-            @Override
-            public void onChanged(List<Place> places) {
-                mFavoritePlacesListAdapter.setPlacesList(places);
-                mFavoritePlacesListAdapter.notifyDataSetChanged();
-            }
+        viewModel.getFavoritePlaces().observe(this, places -> {
+            mFavoritePlacesListAdapter.setPlacesList(places);
+            mFavoritePlacesListAdapter.notifyDataSetChanged();
         });
     }
 

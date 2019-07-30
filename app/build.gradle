@@ -23,6 +23,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    signingConfigs {
+        config {
+            keyAlias 'first_app_key'
+            keyPassword 'firstpassword'
+            storeFile file('../keystore')
+            storePassword 'kablan65'
+        }
+    }
+
 }
 
 configurations.all {
@@ -89,7 +98,7 @@ dependencies {
 
     //Firebase dependencies
     implementation 'com.google.firebase:firebase-core:17.0.1'
-    implementation 'com.google.firebase:firebase-ads:18.1.0'
+    implementation 'com.google.firebase:firebase-ads:18.1.1'
 
 
 }

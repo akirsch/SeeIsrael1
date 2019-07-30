@@ -2,7 +2,9 @@ package com.example.android.seeisrael.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -36,14 +38,18 @@ public class MainActivity extends AppCompatActivity {
         // transparent toolbar
         myToolbar.setPadding(0, 25, 0, 0);
 
+
         MobileAds.initialize(this, getString(R.string.adMob_app_id));
+        Log.d(MainActivity.class.getSimpleName(), "MobileAds initialized");
 
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            getMenuInflater().inflate(R.menu.menu_main, menu);
+        }
         return true;
     }
 

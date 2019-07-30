@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    app:statusBarBackground="@android:color/transparent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:liftOnScroll="true">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:fitsSystemWindows="true"
+            android:layout_alignParentTop="true"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/phone_landscape_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:orientation="horizontal"
+        android:fitsSystemWindows="true">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/default_placeholder_place_image_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_photo"/>
+
+            <ImageView
+                android:id="@+id/location_image_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/location_image_content_description"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_launcher_round"
+                android:transitionName="@string/transition_image"
+                android:fitsSystemWindows="true"/>
+
+            <TextView
+                android:id="@+id/location_title_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/location_subtitle_tv"
+                android:layout_margin="@dimen/standard_view_margin"
+                android:fontFamily="@font/roboto"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                android:textColor="@android:color/white"
+                tools:text="Tower of David" />
+
+            <TextView
+                android:id="@+id/location_subtitle_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/standard_view_margin"
+                android:layout_marginBottom="@dimen/standard_view_margin"
+                android:layout_alignParentBottom="true"
+                android:fontFamily="@font/roboto"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:textColor="@android:color/white"
+                tools:text="Jerusalem, Israel" />
+
+        </RelativeLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:background="@color/activity_background_color"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:id="@+id/place_details_linear_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_marginBottom="@dimen/standard_view_margin"
+                android:layout_marginEnd="@dimen/standard_view_margin">
+
+                <at.blogc.android.views.ExpandableTextView
+                    android:id="@+id/expandableTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/standard_view_margin"
+                    android:layout_marginTop="@dimen/standard_view_margin"
+                    android:layout_marginEnd="@dimen/standard_view_margin"
+                    android:layout_marginBottom="@dimen/small_view_margin"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/roboto"
+                    android:maxLines="3"
+                    android:text="@string/dummy_string"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/list_item_primary_text_size"
+                    app:animation_duration="750" />
+
+                <!-- Optional parameter animation_duration: sets the duration of the expand animation -->
+
+                <Button
+                    android:id="@+id/button_toggle"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginBottom="@dimen/small_view_margin"
+                    android:backgroundTint="@android:color/transparent"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/see_more"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    android:nextFocusForward="@id/location_phone_number_tv"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/color_divider" />
+
+
+                <TextView
+                    android:id="@+id/location_phone_number_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/standard_view_margin"
+                    android:layout_marginTop="@dimen/standard_view_margin"
+                    android:autoLink="phone"
+                    android:drawableStart="@drawable/ic_phone"
+                    android:drawablePadding="@dimen/standard_view_margin"
+                    android:drawableTint="@color/color_icon_default"
+                    android:fontFamily="@font/roboto"
+                    android:textColorLink="@color/colorPrimaryText"
+                    android:textSize="@dimen/list_item_primary_text_size"
+                    tools:text="02-651-2303" />
+
+                <TextView
+                    android:id="@+id/location_address_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/standard_view_margin"
+                    android:layout_marginTop="@dimen/standard_view_margin"
+                    android:drawableStart="@drawable/ic_location_on"
+                    android:drawablePadding="@dimen/standard_view_margin"
+                    android:drawableTint="@color/color_icon_default"
+                    android:fontFamily="@font/roboto"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/list_item_primary_text_size"
+                    android:focusable="true"
+                    tools:text="140 Levi Eshkol Steet" />
+
+
+                <TextView
+                    android:id="@+id/email_address_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/standard_view_margin"
+                    android:layout_marginTop="@dimen/standard_view_margin"
+                    android:autoLink="email"
+                    android:drawableStart="@drawable/ic_email"
+                    android:drawablePadding="@dimen/standard_view_margin"
+                    android:drawableTint="@color/color_icon_default"
+                    android:fontFamily="@font/roboto"
+                    android:textColorLink="@color/colorPrimaryText"
+                    android:textSize="@dimen/list_item_primary_text_size"
+                    tools:text="info@toweroflondon.org.uk" />
+
+                <TextView
+                    android:id="@+id/wikipedia_link_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/standard_view_margin"
+                    android:layout_marginTop="@dimen/standard_view_margin"
+                    android:drawableStart="@drawable/wikipedia"
+                    android:drawablePadding="@dimen/standard_view_margin"
+                    android:drawableTint="@color/color_icon_default"
+                    android:fontFamily="@font/roboto"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/list_item_primary_text_size"
+                    android:autoLink="web"
+                    android:text="@string/wikipedia_link" />
+
+
+                <TextView
+                    android:id="@+id/ticket_info_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/standard_view_margin"
+                    android:layout_marginTop="@dimen/standard_view_margin"
+                    android:drawableStart="@drawable/ic_local_play"
+                    android:drawablePadding="@dimen/standard_view_margin"
+                    android:drawableTint="@color/color_icon_default"
+                    android:fontFamily="@font/roboto"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/list_item_primary_text_size"
+                    tools:text="Adults: 40 ILS \nStudents: 30 ILS" />
+
+                <TextView
+                    android:id="@+id/opening_hours_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/standard_view_margin"
+                    android:layout_marginTop="@dimen/standard_view_margin"
+                    android:drawableStart="@drawable/ic_schedule"
+                    android:drawablePadding="@dimen/standard_view_margin"
+                    android:drawableTint="@color/color_icon_default"
+                    android:fontFamily="@font/roboto"
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="@dimen/list_item_primary_text_size"
+                    tools:text="10am - 6pm" />
+
+            </LinearLayout>
+
+
+
+        </androidx.core.widget.NestedScrollView>
+
+
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_button"
+        android:layout_width="@dimen/fab_button_diameter"
+        android:layout_height="@dimen/fab_button_diameter"
+        android:layout_margin="@dimen/standard_view_margin"
+        android:backgroundTint="@color/colorAccent"
+        android:clickable="true"
+        android:elevation="6dp"
+        android:focusable="true"
+        android:src="@drawable/ic_add"
+        app:borderWidth="0dp"
+        app:layout_anchor="@id/place_details_linear_layout"
+        app:layout_anchorGravity="bottom|end"
+        app:tint="@android:color/white"
+        android:nextFocusForward="@id/button_toggle"/>
+
+    <ProgressBar
+        android:id="@+id/loading_spinner"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
+
+    <TextView
+        android:id="@+id/content_cant_be_displayed_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="@dimen/standard_view_margin"
+        android:text="@string/content_cant_be_displayed"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryText" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -9,16 +9,18 @@ import android.widget.TextView;
 
 import com.example.android.seeisrael.R;
 import com.example.android.seeisrael.adapters.PlacesListAdapter;
-import com.example.android.seeisrael.interfaces.SygicPlacesApiService;
 import com.example.android.seeisrael.models.Places;
 import com.example.android.seeisrael.models.TownQueryMainBodyResponse;
-import com.example.android.seeisrael.networking.RetrofitClientInstance;
 import com.example.android.seeisrael.utils.Config;
 import com.example.android.seeisrael.utils.Constants;
 import com.example.android.seeisrael.viewmodels.CategoryLocationListViewModel;
 import com.example.android.seeisrael.viewmodels.CategoryLocationListViewModelFactory;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,9 +32,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MyViewPagerCategoryFragment extends Fragment {
 
@@ -41,14 +40,17 @@ public class MyViewPagerCategoryFragment extends Fragment {
     private PlacesListAdapter mPlacesListAdapter;
     private Places selectedPlace;
     private String selectedCategory;
+    private boolean isBeingDisplayedInTwoPane;
+    private int selectedPlaceholderImageId;
     private final int API_RESULT_LIMIT = 50;
+
 
 
     @BindView(R.id.location_list_recycler_view)
     RecyclerView mLocationListRecyclerView;
 
     @BindView(R.id.loading_spinner)
-    ProgressBar mProgresBar;
+    ProgressBar mProgressBar;
 
     @BindView(R.id.empty_list_view)
     TextView mEmptyListView;
@@ -57,10 +59,13 @@ public class MyViewPagerCategoryFragment extends Fragment {
     }
 
     // method to allow parent Fragment to pass data to child fragment upon initialization
-    public static MyViewPagerCategoryFragment instanceOfWithData(Places places, String searchCategory) {
+    public static MyViewPagerCategoryFragment instanceOfWithData(Places places, String searchCategory,
+                                                                 int placeholderImageId, boolean isInTwoPane) {
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.SELECTED_PLACES_KEY, places);
         bundle.putString(Constants.SELECTED_CATEGORY_KEY, searchCategory);
+        bundle.putInt(Constants.SELECTED_PLACEHOLDER_IMAGE_ID_KEY, placeholderImageId);
+        bundle.putBoolean(Constants.IS_TWO_PANE_BOOLEAN_KEY, isInTwoPane);
 
         MyViewPagerCategoryFragment myViewPagerCategoryFragment = new MyViewPagerCategoryFragment();
         myViewPagerCategoryFragment.setArguments(bundle);
@@ -92,15 +97,14 @@ public class MyViewPagerCategoryFragment extends Fragment {
         mLocationListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mLocationListRecyclerView.hasFixedSize();
 
-        mLocationListRecyclerView.addItemDecoration(Config.createDividerDecorWithMargin(getContext()));
+        mLocationListRecyclerView.addItemDecoration(Config.createDividerDecorWithMargin(Objects.requireNonNull(getContext())));
 
-        mPlacesListAdapter = new PlacesListAdapter();
-        mLocationListRecyclerView.setAdapter(mPlacesListAdapter);
+
 
 
         mLocationListRecyclerView.setVisibility(View.GONE);
 
-        mProgresBar.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
         mEmptyListView.setVisibility(View.GONE);
 
 
@@ -111,10 +115,17 @@ public class MyViewPagerCategoryFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+
+
         if (getArguments() != null) {
             // Get instance of selected Town
             selectedPlace = getArguments().getParcelable(Constants.SELECTED_PLACES_KEY);
             selectedCategory = getArguments().getString(Constants.SELECTED_CATEGORY_KEY);
+            selectedPlaceholderImageId = getArguments().getInt(Constants.SELECTED_PLACEHOLDER_IMAGE_ID_KEY);
+            isBeingDisplayedInTwoPane = getArguments().getBoolean(Constants.IS_TWO_PANE_BOOLEAN_KEY);
+
+            mPlacesListAdapter = new PlacesListAdapter(getActivity(), selectedPlaceholderImageId, isBeingDisplayedInTwoPane);
+            mLocationListRecyclerView.setAdapter(mPlacesListAdapter);
 
             if (selectedPlace != null) {
                 // get Id of selected town to use for call to API
@@ -126,32 +137,30 @@ public class MyViewPagerCategoryFragment extends Fragment {
                         ViewModelProviders.of(this, factory)
                                 .get(CategoryLocationListViewModel.class);
 
-                if (Config.hasNetworkConnection(getContext())) {
+                if (Config.hasNetworkConnection(Objects.requireNonNull(getContext()))) {
 
                     categoryLocationListViewModel.initialize();
 
                     categoryLocationListViewModel.getListOfLocationsData()
-                            .observe(this, new Observer<TownQueryMainBodyResponse>() {
-                                @Override
-                                public void onChanged(TownQueryMainBodyResponse townQueryMainBodyResponse) {
+                            .observe(this, townQueryMainBodyResponse -> {
 
-                                    if (townQueryMainBodyResponse != null) {
-                                        mDiscoveryPlacesList = (ArrayList<Places>) townQueryMainBodyResponse.data.places;
+                                if (townQueryMainBodyResponse != null) {
+                                    mDiscoveryPlacesList = (ArrayList<Places>) townQueryMainBodyResponse.data.places;
 
-                                        // pass this list to the adapter
-                                        mPlacesListAdapter.setPlacesList(mDiscoveryPlacesList);
-                                        mPlacesListAdapter.notifyDataSetChanged();
+                                    // pass this list to the adapter
+                                    mPlacesListAdapter.setPlacesList(mDiscoveryPlacesList);
+                                    mPlacesListAdapter.notifyDataSetChanged();
 
-                                        // handle UI for a successful API call
-                                        mLocationListRecyclerView.setVisibility(View.VISIBLE);
-                                        mProgresBar.setVisibility(View.GONE);
-                                        mEmptyListView.setVisibility(View.GONE);
-                                    } else {
-                                        mLocationListRecyclerView.setVisibility(View.GONE);
-                                        mProgresBar.setVisibility(View.GONE);
-                                        mEmptyListView.setVisibility(View.VISIBLE);
-                                        mEmptyListView.setText(R.string.placeholder_no_locations);
-                                    }
+                                    // handle UI for a successful API call
+                                    mLocationListRecyclerView.setVisibility(View.VISIBLE);
+                                    mProgressBar.setVisibility(View.GONE);
+                                    mEmptyListView.setVisibility(View.GONE);
+
+                                } else {
+                                    mLocationListRecyclerView.setVisibility(View.GONE);
+                                    mProgressBar.setVisibility(View.GONE);
+                                    mEmptyListView.setVisibility(View.VISIBLE);
+                                    mEmptyListView.setText(R.string.placeholder_no_locations);
                                 }
                             });
                 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -22,10 +23,13 @@ import com.example.android.seeisrael.workmanager.CurrencyApiQueryWorker;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -56,6 +60,7 @@ public class ExchangeRatesFragment extends Fragment {
     private double rubleRate;
     private double euroRate;
     private double canadianDollarRate;
+    private Toolbar mToolbar;
     private String LOG_TAG = ExchangeRatesFragment.class.getSimpleName();
 
     @BindView(R.id.date_tv)
@@ -100,6 +105,23 @@ public class ExchangeRatesFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         Context context = getContext();
+
+        // Set App Bar title to name of project
+        mToolbar = getActivity().findViewById(R.id.toolbar);
+
+        // Set the Toolbar as Action Bar
+        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+
+        Objects.requireNonNull(((AppCompatActivity) getActivity())
+                .getSupportActionBar()).setTitle(R.string.activity_exchange_rates_title);
+
+        // enable up navigation
+        Objects.requireNonNull(((AppCompatActivity) getActivity()).getSupportActionBar())
+                .setDisplayHomeAsUpEnabled(true);
+
+        // Set the padding to match the Status Bar height (to avoid title being cut off by
+        // transparent toolbar
+        mToolbar.setPadding(0, 25, 0, 0);
 
         if (savedInstanceState == null) {
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -334,6 +356,18 @@ public class ExchangeRatesFragment extends Fragment {
                         ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest);
 
 
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up button
+            case android.R.id.home:
+                Objects.requireNonNull(getActivity()).getSupportFragmentManager()
+                        .beginTransaction().remove(this).commit();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
 
