@@ -50,6 +50,7 @@
                 app:layout_constraintStart_toEndOf="@+id/imageView8"
                 app:layout_constraintTop_toTopOf="@+id/caDollar_static_text"
                 app:srcCompat="@drawable/equal_large"
+                android:importantForAccessibility="no"
                 android:tint="@color/colorPrimaryDark"/>
 
             <TextView
@@ -77,6 +78,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/usd_live_rate_view"
                 app:layout_constraintStart_toEndOf="@+id/usd_static_text"
                 app:srcCompat="@drawable/equal_large"
+                android:importantForAccessibility="no"
                 android:tint="@color/colorPrimaryDark"/>
 
             <ImageView
@@ -87,6 +89,7 @@
                 app:layout_constraintStart_toEndOf="@+id/imageView"
                 app:layout_constraintTop_toTopOf="@+id/gbp_static_text"
                 app:srcCompat="@drawable/equal_large"
+                android:importantForAccessibility="no"
                 android:tint="@color/colorPrimaryDark"/>
 
             <ImageView
@@ -97,6 +100,7 @@
                 app:layout_constraintStart_toEndOf="@+id/imageView5"
                 app:layout_constraintTop_toTopOf="@+id/rub_static_text"
                 app:srcCompat="@drawable/equal_large"
+                android:importantForAccessibility="no"
                 android:tint="@color/colorPrimaryDark"/>
 
             <ImageView
@@ -107,6 +111,7 @@
                 app:layout_constraintStart_toEndOf="@+id/imageView6"
                 app:layout_constraintTop_toTopOf="@+id/euro_static_text"
                 app:srcCompat="@drawable/equal_large"
+                android:importantForAccessibility="no"
                 android:tint="@color/colorPrimaryDark"/>
 
             <ImageView
@@ -117,6 +122,7 @@
                 app:layout_constraintStart_toEndOf="@+id/imageView7"
                 app:layout_constraintTop_toTopOf="@+id/rand_static_text"
                 app:srcCompat="@drawable/equal_large"
+                android:importantForAccessibility="no"
                 android:tint="@color/colorPrimaryDark"/>
 
             <TextView

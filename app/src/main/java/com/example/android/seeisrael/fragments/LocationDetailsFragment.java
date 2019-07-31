@@ -25,7 +25,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.android.seeisrael.R;
@@ -35,18 +34,14 @@ import com.example.android.seeisrael.activities.MapsActivity;
 import com.example.android.seeisrael.database.PlacesDatabase;
 import com.example.android.seeisrael.models.Media;
 import com.example.android.seeisrael.models.Place;
-import com.example.android.seeisrael.models.PlaceDetailsMainBodyResponse;
 import com.example.android.seeisrael.utils.AppExecutors;
 import com.example.android.seeisrael.utils.Config;
 import com.example.android.seeisrael.utils.Constants;
-import com.example.android.seeisrael.viewmodels.AddPlaceViewModel;
-import com.example.android.seeisrael.viewmodels.AddPlaceViewModelFactory;
 import com.example.android.seeisrael.viewmodels.LocationDetailsViewModel;
 import com.example.android.seeisrael.viewmodels.LocationDetailsViewModelFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 import java.util.Objects;
@@ -74,10 +69,7 @@ public class LocationDetailsFragment extends Fragment {
     private String imageUrlToDisplay;
     private Place selectedPlace;
     private String TAG;
-    private AddPlaceViewModelFactory factory;
-    private AddPlaceViewModel viewModel;
     private PlacesDatabase mDb;
-    private FirebaseAnalytics mFirebaseAnalytics;
 
     public LocationDetailsFragment() {
     }
@@ -154,7 +146,7 @@ public class LocationDetailsFragment extends Fragment {
         noContentToDisplayView.setVisibility(View.GONE);
         appBarLayout.setVisibility(View.GONE);
         detailsLinearLayoutContainer.setVisibility(View.GONE);
-        fabButton.setVisibility(View.GONE);
+        fabButton.hide();
         defaultNoPicToDisplayIcon.setVisibility(View.GONE);
 
 
@@ -242,7 +234,7 @@ public class LocationDetailsFragment extends Fragment {
                                 appBarLayout.setVisibility(View.GONE);
                                 detailsLinearLayoutContainer.setVisibility(View.GONE);
                                 loadingProgressBar.setVisibility(View.GONE);
-                                fabButton.setVisibility(View.GONE);
+                                fabButton.hide();
                                 noContentToDisplayView.setVisibility(View.VISIBLE);
                             }
 
@@ -288,7 +280,7 @@ public class LocationDetailsFragment extends Fragment {
 
         appBarLayout.setVisibility(View.VISIBLE);
         detailsLinearLayoutContainer.setVisibility(View.VISIBLE);
-        fabButton.setVisibility(View.VISIBLE);
+        fabButton.show();
         loadingProgressBar.setVisibility(View.GONE);
         noContentToDisplayView.setVisibility(View.GONE);
 
@@ -461,6 +453,9 @@ public class LocationDetailsFragment extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.favorites:
+                if (Build.VERSION.SDK_INT >= 26) {
+                    item.setContentDescription(getString(R.string.favorite_button_content_description));
+                }
                 onFavoriteIconClicked(item);
                 break;
             case R.id.action_go_to_favorites:
@@ -555,7 +550,7 @@ public class LocationDetailsFragment extends Fragment {
 
                 mDb.favoritePlacesDao().insertPlace(selectedPlace);
 
-                getActivity().runOnUiThread(() -> {
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
                     // UI changes to show full favorites icon once Place has been added to favorites
                     Drawable selectedAsFavoriteIcon = Objects.requireNonNull(getContext())
                             .getDrawable(R.drawable.ic_favorite);
@@ -568,7 +563,7 @@ public class LocationDetailsFragment extends Fragment {
                 // when favorites button is clicked remove this movie from the favorite movie database
                 mDb.favoritePlacesDao().deletePlace(place);
 
-                getActivity().runOnUiThread(() -> {
+                Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
                     // UI changes to show empty favorites icon now that user has removed it from database
                     Drawable notSelectedAsFavoriteIcon = Objects.requireNonNull(getContext())
                             .getDrawable(R.drawable.ic_favorite_border);

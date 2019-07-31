@@ -11,6 +11,10 @@
 
     <string name="thumbnail_content_description">This is a thumbnail image of this location</string>
 
+    <string name="favorite_button_content_description">Favorite button, press to add and remove location from favorites</string>
+
+    <string name="unselected_favorite_menu_button_content_description">Favorite button showing as unselected, click once to add this place to favorites list</string>
+
     <string name="splash_image_content_description">This is a welcome image the app and to Israel</string>
 
     <string name="dummy_string">Despite fears that Moscow may seek to influence the 2020 elections by launching cyber attacks, social media disinformation, covert agent operations and other “active measures” as it did in the 2016 election, adequate funding and White House focus to counter any new Russian meddling are lagging, experts and officials say.</string>

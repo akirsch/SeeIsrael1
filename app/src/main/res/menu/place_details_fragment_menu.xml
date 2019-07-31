@@ -10,7 +10,8 @@
         app:showAsAction="always"
         android:title="@string/favorites_icon"
         app:iconTint="@android:color/white"
-        android:icon="@drawable/ic_favorite_border"/>
+        android:icon="@drawable/ic_favorite_border"
+        android:contentDescription="@string/unselected_favorite_menu_button_content_description"/>
 
 
     <item

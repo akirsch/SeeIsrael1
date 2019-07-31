@@ -33,6 +33,12 @@
 
     <dimen name="divider_decor_margin">92dp</dimen>
 
+    <dimen name="list_view_item_line_height">20dp</dimen>
+
+    <dimen name="list_view_top_margin">12dp</dimen>
+
+    <dimen name="list_item_max_lines">2</dimen>
+
     <!-- set dimen for length of faded text at end of place description text view-->
     <dimen name="align_twenty">20dp</dimen>
 
